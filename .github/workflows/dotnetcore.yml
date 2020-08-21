@@ -1,0 +1,22 @@
+name: .NET Core
+on: [push, pull_request]
+
+jobs:
+  job:
+    name: Build and Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.401
+      - name: Restore
+        run: dotnet restore Chattle
+      - name: Build
+        run: dotnet build Chattle --configuration Release --no-restore
+      - name: Test
+        run: dotnet test Chattle.Tests
