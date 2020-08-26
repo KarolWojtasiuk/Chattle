@@ -8,8 +8,16 @@ namespace Chattle
     {
         public Guid Id { get; private set; }
         public string Name { get; set; }
-        public string Color { get; set; }
+        public string Color { get; private set; }
         public List<Guid> Users { get; private set; }
+
+        public Role(string name)
+        {
+            Id = Guid.NewGuid();
+            Name = name;
+            Color = "#000000";
+            Users = new List<Guid>();
+        }
 
         public Role(string name, Color color)
         {
@@ -17,6 +25,11 @@ namespace Chattle
             Name = name;
             Color = ColorToHexString(color);
             Users = new List<Guid>();
+        }
+
+        public void ChangeColor(Color color)
+        {
+            Color = ColorToHexString(color);
         }
 
         private static string ColorToHexString(Color color)
