@@ -10,6 +10,7 @@ namespace Chattle
         public string Name { get; set; }
         public string Color { get; private set; }
         public List<Guid> Users { get; private set; }
+        public DateTime CreationTime { get; private set; }
 
         public Role(string name)
         {
@@ -17,6 +18,7 @@ namespace Chattle
             Name = name;
             Color = "#000000";
             Users = new List<Guid>();
+            CreationTime = DateTime.UtcNow;
         }
 
         public Role(string name, Color color)
@@ -25,6 +27,7 @@ namespace Chattle
             Name = name;
             Color = ColorToHexString(color);
             Users = new List<Guid>();
+            CreationTime = DateTime.UtcNow;
         }
 
         public void ChangeColor(Color color)
