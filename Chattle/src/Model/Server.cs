@@ -18,7 +18,7 @@ namespace Chattle
             Name = name;
             Description = description;
             Image = image;
-            Roles = new List<Role>();
+            Roles = new List<Role> { Role.CreateBasicRole() };
             CreationTime = DateTime.UtcNow;
         }
 
@@ -28,7 +28,7 @@ namespace Chattle
             Name = name;
             Description = description;
             Image = GetDefaultServerImage();
-            Roles = new List<Role>();
+            Roles = new List<Role> { Role.CreateBasicRole() };
             CreationTime = DateTime.UtcNow;
         }
 
@@ -38,7 +38,7 @@ namespace Chattle
             Name = name;
             Description = String.Empty;
             Image = GetDefaultServerImage();
-            Roles = new List<Role>();
+            Roles = new List<Role> { Role.CreateBasicRole() };
             CreationTime = DateTime.UtcNow;
         }
 

@@ -30,6 +30,18 @@ namespace Chattle
             CreationTime = DateTime.UtcNow;
         }
 
+        public static Role CreateBasicRole()
+        {
+            return new Role("Users")
+            {
+                Id = Guid.Empty,
+                Name = "Users",
+                Color = "#000000",
+                Users = new List<Guid>(),
+                CreationTime = DateTime.UtcNow
+            };
+        }
+
         public void ChangeColor(Color color)
         {
             Color = ColorToHexString(color);
