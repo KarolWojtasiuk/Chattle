@@ -2,7 +2,7 @@ using System;
 
 namespace Chattle
 {
-    public class Channel
+    public class Channel : IIdentifiable
     {
         public Guid Id { get; private set; }
         public string Name { get; set; }

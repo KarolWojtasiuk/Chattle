@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace Chattle
 {
-    public class Account
+    public class Account : IIdentifiable
     {
         public Guid Id { get; private set; }
         public string Username { get; set; }
