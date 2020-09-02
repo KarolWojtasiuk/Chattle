@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Chattle
 {
-    public class Server
+    public class Server : IIdentifiable
     {
         public Guid Id { get; private set; }
         public string Name { get; set; }

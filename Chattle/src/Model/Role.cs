@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Chattle
 {
-    public class Role
+    public class Role : IIdentifiable
     {
         public Guid Id { get; private set; }
         public string Name { get; set; }
