@@ -49,7 +49,7 @@ namespace Chattle
 
         private static string ColorToHexString(Color color)
         {
-            return $"#{color.R:2}{color.G:2}{color.B:2}";
+            return $"#{color.R:X2}{color.G:X2}{color.B:X2}";
         }
     }
 }
