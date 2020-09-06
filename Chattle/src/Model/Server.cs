@@ -42,10 +42,6 @@ namespace Chattle
             CreationTime = DateTime.UtcNow;
         }
 
-        private Uri GetDefaultServerImage()
-        {
-            throw new NotImplementedException();
-            //TODO: Implement method;
-        }
+        private Uri GetDefaultServerImage() => DefaultImage.GetServerImage(Id);
     }
 }

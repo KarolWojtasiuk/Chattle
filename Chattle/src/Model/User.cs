@@ -31,11 +31,7 @@ namespace Chattle
             CreationTime = DateTime.UtcNow;
         }
 
-        private Uri GetDefaultUserImage()
-        {
-            throw new NotImplementedException();
-            //TODO: Implement method;
-        }
+        private Uri GetDefaultUserImage() => DefaultImage.GetUserImage(Id);
     }
 
     public enum UserType
