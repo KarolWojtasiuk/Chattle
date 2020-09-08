@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Chattle.Database
 {
-    public interface IDatabaseProvider
+    public interface IDatabase
     {
         public void Create<T>(string collectionName, T item) where T : IIdentifiable;
 

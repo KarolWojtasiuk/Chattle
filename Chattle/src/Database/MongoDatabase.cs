@@ -6,7 +6,7 @@ using MongoDB.Driver;
 
 namespace Chattle.Database
 {
-    public class MongoDatabase : IDatabaseProvider
+    public class MongoDatabase : IDatabase
     {
         private readonly IMongoClient client;
         private readonly IMongoDatabase database;
