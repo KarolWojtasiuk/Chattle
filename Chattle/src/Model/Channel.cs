@@ -5,8 +5,8 @@ namespace Chattle
     public class Channel : IIdentifiable
     {
         public Guid Id { get; private set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public string Name { get; internal set; }
+        public string Description { get; internal set; }
         public DateTime CreationTime { get; private set; }
 
         public Channel(string name, string description)

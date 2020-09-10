@@ -5,7 +5,7 @@ namespace Chattle
     public class Message : IIdentifiable
     {
         public Guid Id { get; private set; }
-        public string Content { get; set; }
+        public string Content { get; internal set; }
         public Guid ChannelId { get; private set; }
         public Guid UserId { get; private set; }
         public DateTime CreationTime { get; private set; }

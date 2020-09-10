@@ -5,9 +5,9 @@ namespace Chattle
     public class User : IIdentifiable
     {
         public Guid Id { get; private set; }
-        public string Nickname { get; set; }
-        public Uri Image { get; set; }
-        public bool IsActive { get; set; }
+        public string Nickname { get; internal set; }
+        public Uri Image { get; internal set; }
+        public bool IsActive { get; internal set; }
         public UserType Type { get; private set; }
         public DateTime CreationTime { get; private set; }
 

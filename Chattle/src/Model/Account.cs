@@ -7,8 +7,8 @@ namespace Chattle
     public class Account : IIdentifiable
     {
         public Guid Id { get; private set; }
-        public string Username { get; set; }
-        public bool IsActive { get; set; }
+        public string Username { get; internal set; }
+        public bool IsActive { get; internal set; }
         public DateTime CreationTime { get; private set; }
 
         private string passwordHash;

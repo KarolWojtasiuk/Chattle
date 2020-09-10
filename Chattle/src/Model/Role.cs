@@ -7,7 +7,7 @@ namespace Chattle
     public class Role : IIdentifiable
     {
         public Guid Id { get; private set; }
-        public string Name { get; set; }
+        public string Name { get; internal set; }
         public string Color { get; private set; }
         public List<Guid> Users { get; private set; }
         public DateTime CreationTime { get; private set; }

@@ -6,9 +6,9 @@ namespace Chattle
     public class Server : IIdentifiable
     {
         public Guid Id { get; private set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public Uri Image { get; set; }
+        public string Name { get; internal set; }
+        public string Description { get; internal set; }
+        public Uri Image { get; internal set; }
         public List<Role> Roles { get; private set; }
         public DateTime CreationTime { get; private set; }
 
