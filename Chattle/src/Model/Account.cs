@@ -25,7 +25,7 @@ namespace Chattle
             CreationTime = DateTime.UtcNow;
         }
 
-        public void ChangePassword(string password)
+        internal void ChangePassword(string password)
         {
             using var rfc2898DeriveBytes = new Rfc2898DeriveBytes(password, 16, 100000, HashAlgorithmName.SHA512);
 
