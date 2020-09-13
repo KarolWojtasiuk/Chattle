@@ -34,7 +34,7 @@ namespace Chattle
             CreationTime = DateTime.UtcNow;
         }
 
-        private Uri GetDefaultUserImage() => DefaultImage.GetUserImage(Id);
+        public Uri GetDefaultUserImage() => DefaultImage.GetUserImage(Id);
 
         public bool Equals(User other)
         {
