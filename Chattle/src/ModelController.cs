@@ -16,6 +16,7 @@ namespace Chattle
         #region Account
         public void CreateAccount(Account account)
         {
+            ModelVerifier.VerifyAccount(account);
             foreach (var database in Databases)
             {
                 database.Create("Accounts", account);
@@ -59,6 +60,7 @@ namespace Chattle
         public void ChangeAccountUsername(Account account, string newUsername)
         {
             account.Username = newUsername;
+            ModelVerifier.VerifyAccount(account);
             foreach (var database in Databases)
             {
                 database.Update("Accounts", account.Id, account);
@@ -68,6 +70,7 @@ namespace Chattle
         public void ChangeAccountPassword(Account account, string newPassword)
         {
             account.ChangePassword(newPassword);
+            ModelVerifier.VerifyAccount(account, newPassword);
             foreach (var database in Databases)
             {
                 database.Update("Accounts", account.Id, account);

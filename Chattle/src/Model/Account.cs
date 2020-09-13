@@ -14,14 +14,14 @@ namespace Chattle
         private string passwordHash;
         private string passwordSalt;
 
-        public Account(string username, string password)
+        public Account(string username)
         {
             Id = Guid.NewGuid();
             Username = username;
             IsActive = true;
             passwordHash = String.Empty;
             passwordSalt = String.Empty;
-            ChangePassword(password);
+            ChangePassword(GenerateRandomPassword());
             CreationTime = DateTime.UtcNow;
         }
 
@@ -42,6 +42,11 @@ namespace Chattle
 
             var newHash = rfc2898DeriveBytes.GetBytes(16);
             return newHash.SequenceEqual(hash);
+        }
+
+        private string GenerateRandomPassword()
+        {
+            return Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 16);
         }
     }
 }
