@@ -12,7 +12,8 @@ namespace Chattle.Tests
         {
             var testUsername = "TestUsername";
             var testPassword = "TestPassword";
-            var testAccount = new Account(testUsername, testPassword);
+            var testAccount = new Account(testUsername);
+            testAccount.ChangePassword(testPassword);
 
             Assert.NotEqual(Guid.Empty, testAccount.Id);
             Assert.Equal(testUsername, testAccount.Username);
