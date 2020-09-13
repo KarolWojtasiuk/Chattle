@@ -34,6 +34,11 @@ namespace Chattle.Database
             }
         }
 
+        public int Count<T>(string collectionName, Expression<Func<T, bool>> expression) where T : IIdentifiable
+        {
+            return database.GetCollection<T>(collectionName).AsQueryable().Count(expression);
+        }
+
         public void Update<T>(string collectionName, Guid id, T newItem) where T : IIdentifiable
         {
             database.GetCollection<T>(collectionName).ReplaceOne(i => i.Id == id, newItem);
