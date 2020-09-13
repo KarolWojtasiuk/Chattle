@@ -31,8 +31,8 @@ namespace Chattle.Tests
         public void UserTest()
         {
             var testNickname = "TestNickname";
-            var testUser = new User(testNickname, UserType.User);
-            var testBot = new User(testNickname, UserType.Bot);
+            var testUser = new User(testNickname, Guid.NewGuid(), UserType.User);
+            var testBot = new User(testNickname, Guid.NewGuid(), UserType.Bot);
 
             Assert.NotEqual(Guid.Empty, testUser.Id);
             Assert.NotEqual(Guid.Empty, testBot.Id);

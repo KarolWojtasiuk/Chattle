@@ -8,25 +8,28 @@ namespace Chattle
         public string Nickname { get; internal set; }
         public Uri Image { get; internal set; }
         public bool IsActive { get; internal set; }
+        public Guid AccountId { get; private set; }
         public UserType Type { get; private set; }
         public DateTime CreationTime { get; private set; }
 
-        public User(string nickname, UserType type)
+        public User(string nickname, Guid accountId, UserType type)
         {
             Id = Guid.NewGuid();
             Nickname = nickname;
             Image = GetDefaultUserImage();
             IsActive = true;
+            AccountId = accountId;
             Type = type;
             CreationTime = DateTime.UtcNow;
         }
 
-        public User(string nickname, UserType type, Uri image)
+        public User(string nickname, Guid accountId, UserType type, Uri image)
         {
             Id = Guid.NewGuid();
             Nickname = nickname;
             Image = image;
             IsActive = true;
+            AccountId = accountId;
             Type = type;
             CreationTime = DateTime.UtcNow;
         }
