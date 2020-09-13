@@ -2,7 +2,7 @@ using System;
 
 namespace Chattle
 {
-    public class User : IIdentifiable
+    public class User : IIdentifiable, IEquatable<User>
     {
         public Guid Id { get; private set; }
         public string Nickname { get; internal set; }
@@ -32,6 +32,11 @@ namespace Chattle
         }
 
         private Uri GetDefaultUserImage() => DefaultImage.GetUserImage(Id);
+
+        public bool Equals(User other)
+        {
+            return other.Id == Id;
+        }
     }
 
     public enum UserType

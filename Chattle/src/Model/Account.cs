@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace Chattle
 {
-    public class Account : IIdentifiable
+    public class Account : IIdentifiable, IEquatable<Account>
     {
         public Guid Id { get; private set; }
         public string Username { get; internal set; }
@@ -47,6 +47,11 @@ namespace Chattle
         private string GenerateRandomPassword()
         {
             return Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 16);
+        }
+
+        public bool Equals(Account other)
+        {
+            return other.Id == Id;
         }
     }
 }

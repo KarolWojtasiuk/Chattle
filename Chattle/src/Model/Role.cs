@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Chattle
 {
-    public class Role : IIdentifiable
+    public class Role : IIdentifiable, IEquatable<Role>
     {
         public Guid Id { get; private set; }
         public string Name { get; internal set; }
@@ -50,6 +50,11 @@ namespace Chattle
         private static string ColorToHexString(Color color)
         {
             return $"#{color.R:X2}{color.G:X2}{color.B:X2}";
+        }
+
+        public bool Equals(Role other)
+        {
+            return other.Id == Id;
         }
     }
 }

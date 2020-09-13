@@ -2,7 +2,7 @@ using System;
 
 namespace Chattle
 {
-    public class Channel : IIdentifiable
+    public class Channel : IIdentifiable, IEquatable<Channel>
     {
         public Guid Id { get; private set; }
         public string Name { get; internal set; }
@@ -23,6 +23,11 @@ namespace Chattle
             Name = name;
             Description = String.Empty;
             CreationTime = DateTime.UtcNow;
+        }
+
+        public bool Equals(Channel other)
+        {
+            return other.Id == Id;
         }
     }
 }

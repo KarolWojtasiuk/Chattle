@@ -2,7 +2,7 @@ using System;
 
 namespace Chattle
 {
-    public class Message : IIdentifiable
+    public class Message : IIdentifiable, IEquatable<Message>
     {
         public Guid Id { get; private set; }
         public string Content { get; internal set; }
@@ -17,6 +17,11 @@ namespace Chattle
             ChannelId = channelId;
             UserId = userId;
             CreationTime = DateTime.UtcNow;
+        }
+
+        public bool Equals(Message other)
+        {
+            return other.Id == Id;
         }
     }
 }

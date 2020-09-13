@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Chattle
 {
-    public class Server : IIdentifiable
+    public class Server : IIdentifiable, IEquatable<Server>
     {
         public Guid Id { get; private set; }
         public string Name { get; internal set; }
@@ -43,5 +43,10 @@ namespace Chattle
         }
 
         private Uri GetDefaultServerImage() => DefaultImage.GetServerImage(Id);
+
+        public bool Equals(Server other)
+        {
+            return other.Id == Id;
+        }
     }
 }
