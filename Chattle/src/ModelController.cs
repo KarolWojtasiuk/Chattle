@@ -184,6 +184,74 @@ namespace Chattle
         #endregion
 
         #region Server
+        public void CreateServer(Server server)
+        {
+            if (Databases.FirstOrDefault().Count<Server>("Servers", s => s.Id == server.Id) > 0)
+            {
+                ModelVerifier.ThrowDuplicateException(server);
+            }
+            ModelVerifier.VerifyServer(server);
+
+            foreach (var database in Databases)
+            {
+                database.Create("Servers", server);
+            }
+        }
+
+        public void DeleteServer(Server server)
+        {
+            foreach (var database in Databases)
+            {
+                database.Delete<Server>("Servers", server.Id);
+            }
+        }
+
+        public List<Server> FindServer(Guid serverId)
+        {
+            return Databases.FirstOrDefault().Read<Server>("Servers", s => s.Id == serverId);
+        }
+
+        public void ChangeServerName(Server server, string newName)
+        {
+            server.Name = newName;
+            ModelVerifier.VerifyServerName(server);
+
+            foreach (var database in Databases)
+            {
+                database.Update("Servers", server.Id, server);
+            }
+        }
+
+        public void ChangeServerDescription(Server server, string newDescription)
+        {
+            server.Description = newDescription;
+
+            foreach (var database in Databases)
+            {
+                database.Update("Servers", server.Id, server);
+            }
+        }
+
+        public void ChangeServerImage(Server server, Uri newImage)
+        {
+            server.Image = newImage;
+            ModelVerifier.VerifyServerImage(server);
+
+            foreach (var database in Databases)
+            {
+                database.Update("Servers", server.Id, server);
+            }
+        }
+
+        public void ChangeServerRoles(Server server)
+        {
+            ModelVerifier.VerifyServerRoles(server);
+
+            foreach (var database in Databases)
+            {
+                database.Update("Servers", server.Id, server);
+            }
+        }
         #endregion
 
         #region Channel

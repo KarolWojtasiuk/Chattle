@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Linq;
 
 namespace Chattle
 {
@@ -20,7 +21,7 @@ namespace Chattle
             throw new ModelVerificationException(account, "There is already a user assigned to this account.");
         }
 
-        #region  Account
+        #region Account
         public static void VerifyAccount(Account account, string password)
         {
             VerifyAccountUsername(account);
@@ -81,6 +82,43 @@ namespace Chattle
             if (!WebRequest.Create(user.Image).GetResponse().ContentType.ToLower().StartsWith("image/"))
             {
                 throw new ModelVerificationException(user, "Image Uri should be of type `image/*`.");
+            }
+        }
+        #endregion
+
+        #region Server
+        public static void VerifyServer(Server server)
+        {
+            VerifyServerName(server);
+            VerifyServerImage(server);
+            VerifyServerRoles(server);
+        }
+
+        public static void VerifyServerName(Server server)
+        {
+            if (server.Name.Length < 5)
+            {
+                throw new ModelVerificationException(server, "Name should be at least 5 characters long.");
+            }
+            else if (String.IsNullOrWhiteSpace(server.Name))
+            {
+                throw new ModelVerificationException(server, "Name should not be empty or contain only whitespace.");
+            }
+        }
+
+        public static void VerifyServerImage(Server server)
+        {
+            if (!WebRequest.Create(server.Image).GetResponse().ContentType.ToLower().StartsWith("image/"))
+            {
+                throw new ModelVerificationException(server, "Image Uri should be of type `image/*`.");
+            }
+        }
+
+        public static void VerifyServerRoles(Server server)
+        {
+            if (server.Roles.First(r => r.Id == Guid.Empty) == null)
+            {
+                throw new ModelVerificationException(server, "Default role does not exists.");
             }
         }
         #endregion
