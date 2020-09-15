@@ -8,35 +8,39 @@ namespace Chattle
         public Guid Id { get; private set; }
         public string Name { get; internal set; }
         public string Description { get; internal set; }
+        public Guid AuthorId { get; private set; }
         public Uri Image { get; internal set; }
         public List<Role> Roles { get; private set; }
         public DateTime CreationTime { get; private set; }
 
-        public Server(string name, string description, Uri image)
+        public Server(string name, Guid authorId, string description, Uri image)
         {
             Id = Guid.NewGuid();
             Name = name;
             Description = description;
+            AuthorId = authorId;
             Image = image;
             Roles = new List<Role> { Role.CreateBasicRole() };
             CreationTime = DateTime.UtcNow;
         }
 
-        public Server(string name, string description)
+        public Server(string name, Guid authorId, string description)
         {
             Id = Guid.NewGuid();
             Name = name;
             Description = description;
+            AuthorId = authorId;
             Image = GetDefaultServerImage();
             Roles = new List<Role> { Role.CreateBasicRole() };
             CreationTime = DateTime.UtcNow;
         }
 
-        public Server(string name)
+        public Server(string name, Guid authorId)
         {
             Id = Guid.NewGuid();
             Name = name;
             Description = String.Empty;
+            AuthorId = authorId;
             Image = GetDefaultServerImage();
             Roles = new List<Role> { Role.CreateBasicRole() };
             CreationTime = DateTime.UtcNow;

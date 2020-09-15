@@ -53,8 +53,8 @@ namespace Chattle.Tests
         {
             var testName = "TestName";
             var testDescription = "TestDescription";
-            var testServer2 = new Server(testName);
-            var testServer1 = new Server(testName, testDescription);
+            var testServer2 = new Server(testName, Guid.NewGuid());
+            var testServer1 = new Server(testName, Guid.NewGuid(), testDescription);
 
             Assert.NotEqual(Guid.Empty, testServer1.Id);
             Assert.NotEqual(Guid.Empty, testServer2.Id);
@@ -76,8 +76,8 @@ namespace Chattle.Tests
             var testName = "TestChannel";
             var testDescription = "TestDescription";
 
-            var testChannel1 = new Channel(testName);
-            var testChannel2 = new Channel(testName, testDescription);
+            var testChannel1 = new Channel(testName, Guid.NewGuid());
+            var testChannel2 = new Channel(testName, Guid.NewGuid(), testDescription);
 
             Assert.NotEqual(Guid.Empty, testChannel1.Id);
             Assert.NotEqual(Guid.Empty, testChannel2.Id);
