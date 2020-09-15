@@ -190,7 +190,7 @@ namespace Chattle
             {
                 ModelVerifier.ThrowDuplicateException(server);
             }
-            ModelVerifier.VerifyServer(server);
+            ModelVerifier.VerifyServer(server, Databases.FirstOrDefault().Read<User>("Users", u => u.Id == server.OwnerId).FirstOrDefault());
 
             foreach (var database in Databases)
             {
@@ -198,8 +198,13 @@ namespace Chattle
             }
         }
 
-        public void DeleteServer(Server server)
+        public void DeleteServer(Server server, Guid callerId)
         {
+            if (server.OwnerId != callerId)
+            {
+                ModelVerifier.ThrowNotOwnerException(server);
+            }
+
             foreach (var database in Databases)
             {
                 database.Delete<Server>("Servers", server.Id);
@@ -211,8 +216,10 @@ namespace Chattle
             return Databases.FirstOrDefault().Read<Server>("Servers", s => s.Id == serverId);
         }
 
-        public void ChangeServerName(Server server, string newName)
+        public void ChangeServerName(Server server, string newName, Guid callerId)
         {
+            ModelVerifier.CheckPermission(callerId, server.Roles, Permission.ManageServer);
+
             server.Name = newName;
             ModelVerifier.VerifyServerName(server);
 
@@ -222,8 +229,10 @@ namespace Chattle
             }
         }
 
-        public void ChangeServerDescription(Server server, string newDescription)
+        public void ChangeServerDescription(Server server, string newDescription, Guid callerId)
         {
+            ModelVerifier.CheckPermission(callerId, server.Roles, Permission.ManageServer);
+
             server.Description = newDescription;
 
             foreach (var database in Databases)
@@ -232,8 +241,10 @@ namespace Chattle
             }
         }
 
-        public void ChangeServerImage(Server server, Uri newImage)
+        public void ChangeServerImage(Server server, Uri newImage, Guid callerId)
         {
+            ModelVerifier.CheckPermission(callerId, server.Roles, Permission.ManageServer);
+
             server.Image = newImage;
             ModelVerifier.VerifyServerImage(server);
 
@@ -243,8 +254,10 @@ namespace Chattle
             }
         }
 
-        public void ChangeServerRoles(Server server)
+        public void ChangeServerRoles(Server server, Guid callerId)
         {
+            ModelVerifier.CheckPermission(callerId, server.Roles, Permission.ManageServer);
+
             ModelVerifier.VerifyServerRoles(server);
 
             foreach (var database in Databases)

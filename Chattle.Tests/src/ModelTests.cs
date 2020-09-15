@@ -103,11 +103,11 @@ namespace Chattle.Tests
         }
 
         [Fact]
-        public void TestName()
+        public void RoleTest()
         {
             var testName = "TestName";
-            var testRole1 = new Role(testName);
-            var testRole2 = new Role(testName, Color.FromArgb(255, 255, 255));
+            var testRole1 = new Role(testName, Permission.None);
+            var testRole2 = new Role(testName, Permission.None, Color.FromArgb(255, 255, 255));
 
             Assert.NotEqual(Guid.Empty, testRole1.Id);
             Assert.NotEqual(Guid.Empty, testRole2.Id);

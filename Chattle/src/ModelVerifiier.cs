@@ -1,24 +1,26 @@
 using System;
 using System.Net;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Chattle
 {
     public static class ModelVerifier
     {
-        public static void ThrowDuplicateException(IIdentifiable item)
+        public static void CheckPermission(Guid callerId, List<Role> roles, Permission permission)
         {
-            throw new ModelVerificationException(item, "Object with the same id already exists.");
-        }
+            foreach (var role in roles)
+            {
+                if (role.Users.Contains(callerId))
+                {
+                    if (role.Permission.HasFlag(permission))
+                    {
+                        return;
+                    }
+                }
+            }
 
-        public static void ThrowDoesNotExistsException()
-        {
-            throw new ModelVerificationException("Object does not exists in the database.");
-        }
-
-        public static void AnotherUserAssignedException(Account account)
-        {
-            throw new ModelVerificationException(account, "There is already a user assigned to this account.");
+            throw new ModelVerificationException("User has insufficient permissions.");
         }
 
         #region Account
@@ -87,6 +89,14 @@ namespace Chattle
         #endregion
 
         #region Server
+        public static void VerifyServer(Server server, User author)
+        {
+            VerifyServerName(server);
+            VerifyServerImage(server);
+            VerifyServerRoles(server);
+            VerifyServerAuthor(author);
+        }
+
         public static void VerifyServer(Server server)
         {
             VerifyServerName(server);
@@ -121,7 +131,35 @@ namespace Chattle
                 throw new ModelVerificationException(server, "Default role does not exists.");
             }
         }
+
+        public static void VerifyServerAuthor(User author)
+        {
+            if (author == null)
+            {
+                ThrowDoesNotExistsException();
+            }
+        }
         #endregion
+
+        public static void ThrowNotOwnerException(IIdentifiable item)
+        {
+            throw new ModelVerificationException(item, "Only owner can perform server-based actions.");
+        }
+
+        public static void ThrowDuplicateException(IIdentifiable item)
+        {
+            throw new ModelVerificationException(item, "Object with the same id already exists.");
+        }
+
+        public static void ThrowDoesNotExistsException()
+        {
+            throw new ModelVerificationException("Object does not exists in the database.");
+        }
+
+        public static void AnotherUserAssignedException(Account account)
+        {
+            throw new ModelVerificationException(account, "There is already a user assigned to this account.");
+        }
     }
 
     public class ModelVerificationException : Exception

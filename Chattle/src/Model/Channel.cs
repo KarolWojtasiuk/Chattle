@@ -7,7 +7,7 @@ namespace Chattle
         public Guid Id { get; private set; }
         public string Name { get; internal set; }
         public string Description { get; internal set; }
-        public Guid AuthorId { get; private set; }
+        public Guid ChannelId { get; private set; }
         public DateTime CreationTime { get; private set; }
 
         public Channel(string name, Guid authorId, string description)
@@ -15,7 +15,7 @@ namespace Chattle
             Id = Guid.NewGuid();
             Name = name;
             Description = description;
-            AuthorId = authorId;
+            ChannelId = authorId;
             CreationTime = DateTime.UtcNow;
         }
 
@@ -24,7 +24,7 @@ namespace Chattle
             Id = Guid.NewGuid();
             Name = name;
             Description = String.Empty;
-            AuthorId = authorId;
+            ChannelId = authorId;
             CreationTime = DateTime.UtcNow;
         }
 

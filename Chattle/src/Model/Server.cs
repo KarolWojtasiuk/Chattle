@@ -8,7 +8,7 @@ namespace Chattle
         public Guid Id { get; private set; }
         public string Name { get; internal set; }
         public string Description { get; internal set; }
-        public Guid AuthorId { get; private set; }
+        public Guid OwnerId { get; private set; }
         public Uri Image { get; internal set; }
         public List<Role> Roles { get; private set; }
         public DateTime CreationTime { get; private set; }
@@ -18,7 +18,7 @@ namespace Chattle
             Id = Guid.NewGuid();
             Name = name;
             Description = description;
-            AuthorId = authorId;
+            OwnerId = authorId;
             Image = image;
             Roles = new List<Role> { Role.CreateBasicRole() };
             CreationTime = DateTime.UtcNow;
@@ -29,7 +29,7 @@ namespace Chattle
             Id = Guid.NewGuid();
             Name = name;
             Description = description;
-            AuthorId = authorId;
+            OwnerId = authorId;
             Image = GetDefaultServerImage();
             Roles = new List<Role> { Role.CreateBasicRole() };
             CreationTime = DateTime.UtcNow;
@@ -40,7 +40,7 @@ namespace Chattle
             Id = Guid.NewGuid();
             Name = name;
             Description = String.Empty;
-            AuthorId = authorId;
+            OwnerId = authorId;
             Image = GetDefaultServerImage();
             Roles = new List<Role> { Role.CreateBasicRole() };
             CreationTime = DateTime.UtcNow;
