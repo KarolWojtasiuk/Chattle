@@ -19,7 +19,7 @@ namespace Chattle
         {
             if (Databases.FirstOrDefault().Count<Account>("Accounts", a => a.Id == account.Id) > 0)
             {
-                ModelVerifier.ThrowDuplicateException(account);
+                throw new DuplicateException(account);
             }
             ModelVerifier.VerifyAccount(account);
 
@@ -37,7 +37,7 @@ namespace Chattle
             }
         }
 
-        public List<Account> FindAccount(Guid accountId)
+        public List<Account> FindAccounts(Guid accountId)
         {
             return Databases.FirstOrDefault().Read<Account>("Accounts", a => a.Id == accountId);
         }
@@ -90,12 +90,12 @@ namespace Chattle
         {
             if (Databases.FirstOrDefault().Count<User>("Users", u => u.Id == user.Id) > 0)
             {
-                ModelVerifier.ThrowDuplicateException(user);
+                throw new DuplicateException(user);
             }
 
             if (Databases.FirstOrDefault().Read<Account>("Accounts", a => a.Id == ownerAccount.Id).Count == 0)
             {
-                ModelVerifier.ThrowDoesNotExistsException();
+                throw new DoesNotExistsException();
             }
 
             if (user.Type == UserType.User)
@@ -104,7 +104,7 @@ namespace Chattle
 
                 if (usersCount > 0)
                 {
-                    ModelVerifier.AnotherUserAssignedException(ownerAccount);
+                    throw new AnotherUserAssigned(ownerAccount);
                 }
             }
             ModelVerifier.VerifyUser(user);
@@ -123,7 +123,7 @@ namespace Chattle
             }
         }
 
-        public List<User> FindUser(Guid userId)
+        public List<User> FindUsers(Guid userId)
         {
             return Databases.FirstOrDefault().Read<User>("Users", a => a.Id == userId);
         }
@@ -188,7 +188,7 @@ namespace Chattle
         {
             if (Databases.FirstOrDefault().Count<Server>("Servers", s => s.Id == server.Id) > 0)
             {
-                ModelVerifier.ThrowDuplicateException(server);
+                throw new DuplicateException(server);
             }
             ModelVerifier.VerifyServer(server, Databases.FirstOrDefault().Read<User>("Users", u => u.Id == server.OwnerId).FirstOrDefault());
 
@@ -202,7 +202,7 @@ namespace Chattle
         {
             if (server.OwnerId != callerId)
             {
-                ModelVerifier.ThrowNotOwnerException(server);
+                throw new NotOwnerException(server);
             }
 
             foreach (var database in Databases)
@@ -211,15 +211,17 @@ namespace Chattle
             }
         }
 
-        public List<Server> FindServer(Guid serverId)
+        public List<Server> FindServers(Guid serverId)
         {
             return Databases.FirstOrDefault().Read<Server>("Servers", s => s.Id == serverId);
         }
 
         public void ChangeServerName(Server server, string newName, Guid callerId)
         {
-            ModelVerifier.CheckPermission(callerId, server.Roles, Permission.ManageServer);
-
+            if (server.OwnerId != callerId)
+            {
+                ModelVerifier.CheckPermission(callerId, server.Roles, Permission.ManageServer);
+            }
             server.Name = newName;
             ModelVerifier.VerifyServerName(server);
 
@@ -231,8 +233,10 @@ namespace Chattle
 
         public void ChangeServerDescription(Server server, string newDescription, Guid callerId)
         {
-            ModelVerifier.CheckPermission(callerId, server.Roles, Permission.ManageServer);
-
+            if (server.OwnerId != callerId)
+            {
+                ModelVerifier.CheckPermission(callerId, server.Roles, Permission.ManageServer);
+            }
             server.Description = newDescription;
 
             foreach (var database in Databases)
@@ -243,8 +247,10 @@ namespace Chattle
 
         public void ChangeServerImage(Server server, Uri newImage, Guid callerId)
         {
-            ModelVerifier.CheckPermission(callerId, server.Roles, Permission.ManageServer);
-
+            if (server.OwnerId != callerId)
+            {
+                ModelVerifier.CheckPermission(callerId, server.Roles, Permission.ManageServer);
+            }
             server.Image = newImage;
             ModelVerifier.VerifyServerImage(server);
 
@@ -256,8 +262,10 @@ namespace Chattle
 
         public void ChangeServerRoles(Server server, Guid callerId)
         {
-            ModelVerifier.CheckPermission(callerId, server.Roles, Permission.ManageServer);
-
+            if (server.OwnerId != callerId)
+            {
+                ModelVerifier.CheckPermission(callerId, server.Roles, Permission.ManageServer);
+            }
             ModelVerifier.VerifyServerRoles(server);
 
             foreach (var database in Databases)
@@ -268,6 +276,85 @@ namespace Chattle
         #endregion
 
         #region Channel
+        public void CreateChannel(Channel channel, Guid callerId)
+        {
+            if (Databases.FirstOrDefault().Count<Channel>("Channels", c => c.Id == channel.Id) > 0)
+            {
+                throw new DuplicateException(channel);
+            }
+
+            var server = Databases.FirstOrDefault().Read<Server>("Servers", s => s.Id == channel.ServerId).FirstOrDefault();
+
+            if (server == null)
+            {
+                throw new DoesNotExistsException();
+            }
+
+            if (server.OwnerId != callerId)
+            {
+                ModelVerifier.CheckPermission(callerId, server.Roles, Permission.ManageChannels);
+            }
+
+            ModelVerifier.VerifyChannel(channel);
+
+            foreach (var database in Databases)
+            {
+                database.Create("Channels", channel);
+            }
+        }
+
+        public void DeleteChannel(Channel channel, Guid callerId)
+        {
+            var server = Databases.FirstOrDefault().Read<Server>("Servers", s => s.Id == channel.ServerId).FirstOrDefault();
+
+            if (server.OwnerId != callerId)
+            {
+                ModelVerifier.CheckPermission(callerId, server.Roles, Permission.ManageChannels);
+            }
+
+            foreach (var database in Databases)
+            {
+                database.Delete<Channel>("Channel", server.Id);
+            }
+        }
+
+        public List<Channel> FindChannels(Guid channelId)
+        {
+            return Databases.FirstOrDefault().Read<Channel>("Channels", c => c.Id == channelId);
+        }
+
+        public void ChangeChannelName(Channel channel, string newName, Guid callerId)
+        {
+            var server = Databases.FirstOrDefault().Read<Server>("Servers", s => s.Id == channel.ServerId).FirstOrDefault();
+
+            if (server.OwnerId != callerId)
+            {
+                ModelVerifier.CheckPermission(callerId, server.Roles, Permission.ManageChannels);
+            }
+            channel.Name = newName;
+            ModelVerifier.VerifyChannelName(channel);
+
+            foreach (var database in Databases)
+            {
+                database.Update("Channels", channel.Id, channel);
+            }
+        }
+
+        public void ChangeChannelDescription(Channel channel, string newDescription, Guid callerId)
+        {
+            var server = Databases.FirstOrDefault().Read<Server>("Servers", s => s.Id == channel.ServerId).FirstOrDefault();
+
+            if (server.OwnerId != callerId)
+            {
+                ModelVerifier.CheckPermission(callerId, server.Roles, Permission.ManageChannels);
+            }
+            channel.Description = newDescription;
+
+            foreach (var database in Databases)
+            {
+                database.Update("Channels", channel.Id, channel);
+            }
+        }
         #endregion
 
         #region Message

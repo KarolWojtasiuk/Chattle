@@ -136,30 +136,29 @@ namespace Chattle
         {
             if (author == null)
             {
-                ThrowDoesNotExistsException();
+                throw new DoesNotExistsException();
             }
         }
         #endregion
 
-        public static void ThrowNotOwnerException(IIdentifiable item)
+        #region Channel
+        public static void VerifyChannel(Channel channel)
         {
-            throw new ModelVerificationException(item, "Only owner can perform server-based actions.");
+            VerifyChannelName(channel);
         }
 
-        public static void ThrowDuplicateException(IIdentifiable item)
+        public static void VerifyChannelName(Channel channel)
         {
-            throw new ModelVerificationException(item, "Object with the same id already exists.");
+            if (channel.Name.Length < 5)
+            {
+                throw new ModelVerificationException(channel, "Name should be at least 5 characters long.");
+            }
+            else if (String.IsNullOrWhiteSpace(channel.Name))
+            {
+                throw new ModelVerificationException(channel, "Name should not be empty or contain only whitespace.");
+            }
         }
-
-        public static void ThrowDoesNotExistsException()
-        {
-            throw new ModelVerificationException("Object does not exists in the database.");
-        }
-
-        public static void AnotherUserAssignedException(Account account)
-        {
-            throw new ModelVerificationException(account, "There is already a user assigned to this account.");
-        }
+        #endregion
     }
 
     public class ModelVerificationException : Exception
@@ -168,5 +167,25 @@ namespace Chattle
 
         public ModelVerificationException(string message) : base(message) { }
         public ModelVerificationException(IIdentifiable item, string message) : base($"{item.GetType().Name}({item.Id}) -> {message}") { }
+    }
+
+    public class DoesNotExistsException : ModelVerificationException
+    {
+        public DoesNotExistsException() : base("Object does not exists in the database.") { }
+    }
+
+    public class NotOwnerException : ModelVerificationException
+    {
+        public NotOwnerException(IIdentifiable item) : base(item, "Only owner can perform server-based actions.") { }
+    }
+
+    public class DuplicateException : ModelVerificationException
+    {
+        public DuplicateException(IIdentifiable item) : base(item, "Object with the same id already exists.") { }
+    }
+
+    public class AnotherUserAssigned : ModelVerificationException
+    {
+        public AnotherUserAssigned(IIdentifiable item) : base(item, "There is already a user assigned to this account.") { }
     }
 }

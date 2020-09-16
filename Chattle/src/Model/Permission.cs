@@ -6,7 +6,7 @@ namespace Chattle
     public enum Permission
     {
         None = 0,
-        ManageServer = 1
-
+        ManageServer = 1,
+        ManageChannels = 2
     }
 }

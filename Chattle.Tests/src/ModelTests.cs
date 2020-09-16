@@ -76,8 +76,8 @@ namespace Chattle.Tests
             var testName = "TestChannel";
             var testDescription = "TestDescription";
 
-            var testChannel1 = new Channel(testName, Guid.NewGuid());
-            var testChannel2 = new Channel(testName, Guid.NewGuid(), testDescription);
+            var testChannel1 = new Channel(testName, Guid.NewGuid(), Guid.NewGuid());
+            var testChannel2 = new Channel(testName, Guid.NewGuid(), Guid.NewGuid(), testDescription);
 
             Assert.NotEqual(Guid.Empty, testChannel1.Id);
             Assert.NotEqual(Guid.Empty, testChannel2.Id);
