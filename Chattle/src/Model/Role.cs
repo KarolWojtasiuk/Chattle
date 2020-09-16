@@ -40,6 +40,7 @@ namespace Chattle
                 Id = Guid.Empty,
                 Name = "Users",
                 Color = "#000000",
+                Permission = Permission.None,
                 Users = new List<Guid>(),
                 CreationTime = DateTime.UtcNow
             };

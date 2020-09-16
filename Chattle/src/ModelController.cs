@@ -358,9 +358,81 @@ namespace Chattle
         #endregion
 
         #region Message
-        #endregion
+        public void CreateMessage(Message message, Guid channelId, Guid callerId)
+        {
+            if (Databases.FirstOrDefault().Count<Message>("Messages", m => m.Id == message.Id) > 0)
+            {
+                throw new DuplicateException(message);
+            }
 
-        #region Role
+            var channel = Databases.FirstOrDefault().Read<Channel>("Channels", c => c.Id == channelId).FirstOrDefault();
+
+            var server = Databases.FirstOrDefault().Read<Server>("Servers", s => s.Id == channel.ServerId).FirstOrDefault();
+
+            if (channel == null)
+            {
+                throw new DoesNotExistsException();
+            }
+
+            if (server.OwnerId != callerId)
+            {
+                ModelVerifier.CheckPermission(callerId, server.Roles, Permission.SendMessages);
+            }
+
+            foreach (var database in Databases)
+            {
+                database.Create("Messages", message);
+            }
+
+        }
+
+        public void DeleteMessage(Message message, Guid callerId)
+        {
+            if (Databases.FirstOrDefault().Count<Message>("Messages", m => m.Id == message.Id) > 0)
+            {
+                throw new DuplicateException(message);
+            }
+
+            var channel = Databases.FirstOrDefault().Read<Channel>("Channels", c => c.Id == message.ChannelId).FirstOrDefault();
+
+            var server = Databases.FirstOrDefault().Read<Server>("Servers", s => s.Id == channel.ServerId).FirstOrDefault();
+
+            if (channel == null)
+            {
+                throw new DoesNotExistsException();
+            }
+
+            if (server.OwnerId != callerId)
+            {
+                ModelVerifier.CheckPermission(callerId, server.Roles, Permission.DeleteMessages);
+            }
+
+            foreach (var database in Databases)
+            {
+                database.Create("Messages", message);
+            }
+
+        }
+
+        public List<Message> FindMessages(Guid channelId, int limit, Guid callerId)
+        {
+            var channel = Databases.FirstOrDefault().Read<Channel>("Channels", c => c.Id == channelId).FirstOrDefault();
+
+            var server = Databases.FirstOrDefault().Read<Server>("Servers", s => s.Id == channel.ServerId).FirstOrDefault();
+
+            if (channel == null)
+            {
+                throw new DoesNotExistsException();
+            }
+
+            if (server.OwnerId != callerId)
+            {
+                ModelVerifier.CheckPermission(callerId, server.Roles, Permission.ReadMessages);
+            }
+
+            return Databases.FirstOrDefault().Read<Message>("Messages", m => true, limit);
+
+        }
         #endregion
     }
 }

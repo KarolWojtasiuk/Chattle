@@ -126,9 +126,22 @@ namespace Chattle
 
         public static void VerifyServerRoles(Server server)
         {
-            if (server.Roles.First(r => r.Id == Guid.Empty) == null)
+            var defaultRole = server.Roles.FirstOrDefault(r => r.Id == Guid.Empty);
+
+            if (defaultRole == null)
             {
                 throw new ModelVerificationException(server, "Default role does not exists.");
+            }
+
+            foreach (var role in server.Roles)
+            {
+                foreach (var user in role.Users)
+                {
+                    if (!defaultRole.Users.Contains(user))
+                    {
+                        throw new ModelVerificationException(server, "Assign a primary role to a user before assigning other roles to them.");
+                    }
+                }
             }
         }
 

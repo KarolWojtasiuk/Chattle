@@ -24,6 +24,7 @@ namespace Chattle.Database
 
         public List<T> Read<T>(string collectionName, Expression<Func<T, bool>> expression, int limit = 0) where T : IIdentifiable
         {
+            var query = database.GetCollection<T>(collectionName).AsQueryable().OrderByDescending(i => i.CreationTime);
             if (limit <= 0)
             {
                 return database.GetCollection<T>(collectionName).AsQueryable().Where(expression).ToList();
