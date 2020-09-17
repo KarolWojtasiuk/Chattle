@@ -11,9 +11,9 @@ namespace Chattle.Database
         private readonly IMongoClient client;
         private readonly IMongoDatabase database;
 
-        public MongoDatabase(string databaseName)
+        public MongoDatabase(string connectionString, string databaseName)
         {
-            client = new MongoClient();
+            client = new MongoClient(connectionString);
             database = client.GetDatabase(databaseName);
         }
 
