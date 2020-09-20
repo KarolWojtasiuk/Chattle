@@ -9,9 +9,9 @@ namespace Chattle
     {
         public List<IDatabase> Databases;
 
-        public ModelController()
+        public ModelController(IDatabase masterDatabase)
         {
-            Databases = new List<IDatabase>();
+            Databases = new List<IDatabase> { masterDatabase };
         }
 
         #region Account
@@ -37,9 +37,9 @@ namespace Chattle
             }
         }
 
-        public List<Account> FindAccounts(Guid accountId)
+        public Account FindAccount(Guid accountId)
         {
-            return Databases.FirstOrDefault().Read<Account>("Accounts", a => a.Id == accountId);
+            return Databases.FirstOrDefault().Read<Account>("Accounts", a => a.Id == accountId).FirstOrDefault();
         }
 
         public void ActivateAccount(Account account)
@@ -123,9 +123,9 @@ namespace Chattle
             }
         }
 
-        public List<User> FindUsers(Guid userId)
+        public User FindUser(Guid userId)
         {
-            return Databases.FirstOrDefault().Read<User>("Users", a => a.Id == userId);
+            return Databases.FirstOrDefault().Read<User>("Users", a => a.Id == userId).FirstOrDefault();
         }
 
         public void ActivateUser(User user)
@@ -211,9 +211,9 @@ namespace Chattle
             }
         }
 
-        public List<Server> FindServers(Guid serverId)
+        public Server FindServer(Guid serverId)
         {
-            return Databases.FirstOrDefault().Read<Server>("Servers", s => s.Id == serverId);
+            return Databases.FirstOrDefault().Read<Server>("Servers", s => s.Id == serverId).FirstOrDefault();
         }
 
         public void ChangeServerName(Server server, string newName, Guid callerId)
@@ -318,9 +318,9 @@ namespace Chattle
             }
         }
 
-        public List<Channel> FindChannels(Guid channelId)
+        public Channel FindChannel(Guid channelId)
         {
-            return Databases.FirstOrDefault().Read<Channel>("Channels", c => c.Id == channelId);
+            return Databases.FirstOrDefault().Read<Channel>("Channels", c => c.Id == channelId).FirstOrDefault();
         }
 
         public void ChangeChannelName(Channel channel, string newName, Guid callerId)
