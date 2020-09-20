@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Security.Cryptography;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Chattle
 {
@@ -11,8 +12,8 @@ namespace Chattle
         public bool IsActive { get; internal set; }
         public DateTime CreationTime { get; private set; }
 
-        private string passwordHash;
-        private string passwordSalt;
+        [BsonElement] private string passwordHash;
+        [BsonElement] private string passwordSalt;
 
         public Account(string username)
         {
