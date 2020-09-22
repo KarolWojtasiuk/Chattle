@@ -86,25 +86,25 @@ namespace Chattle
         #endregion
 
         #region User
-        public void CreateUser(User user, Account ownerAccount)
+        public void CreateUser(User user)
         {
             if (Databases.FirstOrDefault().Count<User>("Users", u => u.Id == user.Id) > 0)
             {
                 throw new DuplicateException(user);
             }
 
-            if (Databases.FirstOrDefault().Read<Account>("Accounts", a => a.Id == ownerAccount.Id).Count == 0)
+            if (Databases.FirstOrDefault().Read<Account>("Accounts", a => a.Id == user.AccountId).Count == 0)
             {
                 throw new DoesNotExistsException();
             }
 
             if (user.Type == UserType.User)
             {
-                var usersCount = Databases.FirstOrDefault().Count<User>("Users", u => u.AccountId == ownerAccount.Id && u.Type == UserType.User);
+                var usersCount = Databases.FirstOrDefault().Count<User>("Users", u => u.AccountId == user.AccountId && u.Type == UserType.User);
 
                 if (usersCount > 0)
                 {
-                    throw new AnotherUserAssigned(ownerAccount);
+                    throw new AnotherUserAssigned(user);
                 }
             }
             ModelVerifier.VerifyUser(user);
@@ -314,7 +314,7 @@ namespace Chattle
 
             foreach (var database in Databases)
             {
-                database.Delete<Channel>("Channel", server.Id);
+                database.Delete<Channel>("Channels", channel.Id);
             }
         }
 
@@ -358,25 +358,31 @@ namespace Chattle
         #endregion
 
         #region Message
-        public void CreateMessage(Message message, Guid channelId, Guid callerId)
+        public void CreateMessage(Message message)
         {
             if (Databases.FirstOrDefault().Count<Message>("Messages", m => m.Id == message.Id) > 0)
             {
                 throw new DuplicateException(message);
             }
 
-            var channel = Databases.FirstOrDefault().Read<Channel>("Channels", c => c.Id == channelId).FirstOrDefault();
-
-            var server = Databases.FirstOrDefault().Read<Server>("Servers", s => s.Id == channel.ServerId).FirstOrDefault();
+            var channel = Databases.FirstOrDefault().Read<Channel>("Channels", c => c.Id == message.ChannelId).FirstOrDefault();
 
             if (channel == null)
             {
                 throw new DoesNotExistsException();
+
             }
 
-            if (server.OwnerId != callerId)
+            var server = Databases.FirstOrDefault().Read<Server>("Servers", s => s.Id == channel.ServerId).FirstOrDefault();
+
+            if (server == null)
             {
-                ModelVerifier.CheckPermission(callerId, server.Roles, Permission.SendMessages);
+                throw new DoesNotExistsException();
+            }
+
+            if (server.OwnerId != message.UserId)
+            {
+                ModelVerifier.CheckPermission(message.UserId, server.Roles, Permission.SendMessages);
             }
 
             foreach (var database in Databases)
@@ -388,11 +394,6 @@ namespace Chattle
 
         public void DeleteMessage(Message message, Guid callerId)
         {
-            if (Databases.FirstOrDefault().Count<Message>("Messages", m => m.Id == message.Id) > 0)
-            {
-                throw new DuplicateException(message);
-            }
-
             var channel = Databases.FirstOrDefault().Read<Channel>("Channels", c => c.Id == message.ChannelId).FirstOrDefault();
 
             var server = Databases.FirstOrDefault().Read<Server>("Servers", s => s.Id == channel.ServerId).FirstOrDefault();
@@ -409,9 +410,8 @@ namespace Chattle
 
             foreach (var database in Databases)
             {
-                database.Create("Messages", message);
+                database.Delete<Message>("Messages", message.Id);
             }
-
         }
 
         public List<Message> FindMessages(Guid channelId, int limit, Guid callerId)
