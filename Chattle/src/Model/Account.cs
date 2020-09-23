@@ -1,31 +1,32 @@
 using System;
 using System.Linq;
 using System.Security.Cryptography;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Chattle
 {
-    public class Account : IIdentifiable
+    public class Account : IIdentifiable, IEquatable<Account>
     {
         public Guid Id { get; private set; }
-        public string Username { get; set; }
-        public bool IsActive { get; set; }
+        public string Username { get; internal set; }
+        public bool IsActive { get; internal set; }
         public DateTime CreationTime { get; private set; }
 
-        private string passwordHash;
-        private string passwordSalt;
+        [BsonElement] private string passwordHash;
+        [BsonElement] private string passwordSalt;
 
-        public Account(string username, string password)
+        public Account(string username)
         {
             Id = Guid.NewGuid();
             Username = username;
             IsActive = true;
             passwordHash = String.Empty;
             passwordSalt = String.Empty;
-            ChangePassword(password);
+            ChangePassword(GenerateRandomPassword());
             CreationTime = DateTime.UtcNow;
         }
 
-        public void ChangePassword(string password)
+        internal void ChangePassword(string password)
         {
             using var rfc2898DeriveBytes = new Rfc2898DeriveBytes(password, 16, 100000, HashAlgorithmName.SHA512);
 
@@ -42,6 +43,16 @@ namespace Chattle
 
             var newHash = rfc2898DeriveBytes.GetBytes(16);
             return newHash.SequenceEqual(hash);
+        }
+
+        private string GenerateRandomPassword()
+        {
+            return Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 16);
+        }
+
+        public bool Equals(Account other)
+        {
+            return other.Id == Id;
         }
     }
 }

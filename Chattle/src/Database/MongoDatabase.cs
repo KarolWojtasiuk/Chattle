@@ -6,14 +6,14 @@ using MongoDB.Driver;
 
 namespace Chattle.Database
 {
-    public class MongoDatabase : IDatabaseProvider
+    public class MongoDatabase : IDatabase
     {
         private readonly IMongoClient client;
         private readonly IMongoDatabase database;
 
-        public MongoDatabase(string databaseName)
+        public MongoDatabase(string connectionString, string databaseName)
         {
-            client = new MongoClient();
+            client = new MongoClient(connectionString);
             database = client.GetDatabase(databaseName);
         }
 
@@ -24,6 +24,7 @@ namespace Chattle.Database
 
         public List<T> Read<T>(string collectionName, Expression<Func<T, bool>> expression, int limit = 0) where T : IIdentifiable
         {
+            var query = database.GetCollection<T>(collectionName).AsQueryable().OrderByDescending(i => i.CreationTime);
             if (limit <= 0)
             {
                 return database.GetCollection<T>(collectionName).AsQueryable().Where(expression).ToList();
@@ -32,6 +33,11 @@ namespace Chattle.Database
             {
                 return database.GetCollection<T>(collectionName).AsQueryable().Where(expression).Take(limit).ToList();
             }
+        }
+
+        public int Count<T>(string collectionName, Expression<Func<T, bool>> expression) where T : IIdentifiable
+        {
+            return database.GetCollection<T>(collectionName).AsQueryable().Count(expression);
         }
 
         public void Update<T>(string collectionName, Guid id, T newItem) where T : IIdentifiable

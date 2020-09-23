@@ -2,36 +2,44 @@ using System;
 
 namespace Chattle
 {
-    public class User : IIdentifiable
+    public class User : IIdentifiable, IEquatable<User>
     {
         public Guid Id { get; private set; }
-        public string Nickname { get; set; }
-        public Uri Image { get; set; }
-        public bool IsActive { get; set; }
+        public string Nickname { get; internal set; }
+        public Uri Image { get; internal set; }
+        public bool IsActive { get; internal set; }
+        public Guid AccountId { get; private set; }
         public UserType Type { get; private set; }
         public DateTime CreationTime { get; private set; }
 
-        public User(string nickname, UserType type)
+        public User(string nickname, Guid accountId, UserType type)
         {
             Id = Guid.NewGuid();
             Nickname = nickname;
             Image = GetDefaultUserImage();
             IsActive = true;
+            AccountId = accountId;
             Type = type;
             CreationTime = DateTime.UtcNow;
         }
 
-        public User(string nickname, UserType type, Uri image)
+        public User(string nickname, Guid accountId, UserType type, Uri image)
         {
             Id = Guid.NewGuid();
             Nickname = nickname;
             Image = image;
             IsActive = true;
+            AccountId = accountId;
             Type = type;
             CreationTime = DateTime.UtcNow;
         }
 
-        private Uri GetDefaultUserImage() => DefaultImage.GetUserImage(Id);
+        public Uri GetDefaultUserImage() => DefaultImage.GetUserImage(Id);
+
+        public bool Equals(User other)
+        {
+            return other.Id == Id;
+        }
     }
 
     public enum UserType

@@ -12,7 +12,8 @@ namespace Chattle.Tests
         {
             var testUsername = "TestUsername";
             var testPassword = "TestPassword";
-            var testAccount = new Account(testUsername, testPassword);
+            var testAccount = new Account(testUsername);
+            testAccount.ChangePassword(testPassword);
 
             Assert.NotEqual(Guid.Empty, testAccount.Id);
             Assert.Equal(testUsername, testAccount.Username);
@@ -30,8 +31,8 @@ namespace Chattle.Tests
         public void UserTest()
         {
             var testNickname = "TestNickname";
-            var testUser = new User(testNickname, UserType.User);
-            var testBot = new User(testNickname, UserType.Bot);
+            var testUser = new User(testNickname, Guid.NewGuid(), UserType.User);
+            var testBot = new User(testNickname, Guid.NewGuid(), UserType.Bot);
 
             Assert.NotEqual(Guid.Empty, testUser.Id);
             Assert.NotEqual(Guid.Empty, testBot.Id);
@@ -52,8 +53,8 @@ namespace Chattle.Tests
         {
             var testName = "TestName";
             var testDescription = "TestDescription";
-            var testServer2 = new Server(testName);
-            var testServer1 = new Server(testName, testDescription);
+            var testServer2 = new Server(testName, Guid.NewGuid());
+            var testServer1 = new Server(testName, Guid.NewGuid(), testDescription);
 
             Assert.NotEqual(Guid.Empty, testServer1.Id);
             Assert.NotEqual(Guid.Empty, testServer2.Id);
@@ -75,8 +76,8 @@ namespace Chattle.Tests
             var testName = "TestChannel";
             var testDescription = "TestDescription";
 
-            var testChannel1 = new Channel(testName);
-            var testChannel2 = new Channel(testName, testDescription);
+            var testChannel1 = new Channel(testName, Guid.NewGuid(), Guid.NewGuid());
+            var testChannel2 = new Channel(testName, Guid.NewGuid(), Guid.NewGuid(), testDescription);
 
             Assert.NotEqual(Guid.Empty, testChannel1.Id);
             Assert.NotEqual(Guid.Empty, testChannel2.Id);
@@ -102,11 +103,11 @@ namespace Chattle.Tests
         }
 
         [Fact]
-        public void TestName()
+        public void RoleTest()
         {
             var testName = "TestName";
-            var testRole1 = new Role(testName);
-            var testRole2 = new Role(testName, Color.FromArgb(255, 255, 255));
+            var testRole1 = new Role(testName, Permission.None);
+            var testRole2 = new Role(testName, Permission.None, Color.FromArgb(255, 255, 255));
 
             Assert.NotEqual(Guid.Empty, testRole1.Id);
             Assert.NotEqual(Guid.Empty, testRole2.Id);
