@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Chattle.SingalR
+namespace Chattle.SignalR
 {
     public class Program
     {
