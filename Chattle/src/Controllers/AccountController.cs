@@ -4,7 +4,7 @@ using Chattle.Database;
 
 namespace Chattle
 {
-    public class AccountController : IController
+    public class AccountController
     {
         private readonly IDatabase _database;
         private readonly string _collectionName;
@@ -15,28 +15,67 @@ namespace Chattle
             _collectionName = collectionName;
         }
 
-        public void Create<T>(T item) where T : IIdentifiable
+        private bool HasGlobalPermission(Guid id, AccountGlobalPermission permission)
         {
-            _database.Create(_collectionName, item);
+            return _database.Read<Account>(_collectionName, a => a.Id == id, 1).FirstOrDefault().GlobalPermissions.HasFlag(permission);
         }
 
-        public T Read<T>(Guid id) where T : IIdentifiable
+        private static void VerifyUsername(string username, Guid accountId)
         {
-            return _database.Read<T>(_collectionName, a => a.Id == id, 1).First();
+            if (username.Length < 5)
+            {
+                throw new ModelVerificationException<Account>(accountId, "Username should be at least 5 characters long.");
+            }
+            else if (String.IsNullOrWhiteSpace(username))
+            {
+                throw new ModelVerificationException<Account>(accountId, "Username should not be empty or contain only whitespace.");
+            }
         }
 
-        public void Delete<T>(Guid id) where T : IIdentifiable
+        public void Create(Account account)
         {
-            _database.Delete<T>(_collectionName, id);
+            VerifyUsername(account.Username, account.Id);
+            _database.Create(_collectionName, account);
         }
 
-        public void SetActive(Guid id, bool isActive)
+        public Account Read(Guid id, Guid callerId)
         {
+            if (_database.Count<Account>(_collectionName, a => a.Id == callerId && a.IsActive == true) <= 0)
+            {
+                throw new InsufficientPermissionsException(callerId);
+            }
+
+            return _database.Read<Account>(_collectionName, a => a.Id == id, 1).FirstOrDefault();
+        }
+
+        public void Delete(Guid id, Guid callerId)
+        {
+            if (id != callerId || !HasGlobalPermission(callerId, AccountGlobalPermission.ManageAccounts))
+            {
+                throw new InsufficientPermissionsException(callerId);
+            }
+
+            _database.Delete<Account>(_collectionName, id);
+        }
+
+        public void SetActive(Guid id, bool isActive, Guid callerId)
+        {
+            if (!HasGlobalPermission(callerId, AccountGlobalPermission.ManageAccounts))
+            {
+                throw new InsufficientPermissionsException(callerId);
+            }
+
             _database.Update<Account>(_collectionName, id, "IsActive", isActive);
         }
 
-        public void SetUsername(Guid id, string username)
+        public void SetUsername(Guid id, string username, Guid callerId)
         {
+            VerifyUsername(username, id);
+            if (id != callerId || !HasGlobalPermission(callerId, AccountGlobalPermission.ManageAccounts))
+            {
+                throw new InsufficientPermissionsException(callerId);
+            }
+
             _database.Update<Account>(_collectionName, id, "Username", username);
         }
     }
