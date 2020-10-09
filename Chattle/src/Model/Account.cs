@@ -10,6 +10,7 @@ namespace Chattle
         public Guid Id { get; private set; }
         public string Username { get; internal set; }
         public bool IsActive { get; internal set; }
+        public AccountGlobalPermission GlobalPermissions { get; internal set; }
         public DateTime CreationTime { get; private set; }
 
         [BsonElement("PasswordHash")] private string _passwordHash;
@@ -20,6 +21,7 @@ namespace Chattle
             Id = Guid.NewGuid();
             Username = username;
             IsActive = true;
+            GlobalPermissions = AccountGlobalPermission.None;
             _passwordHash = String.Empty;
             _passwordSalt = String.Empty;
             ChangePassword(GenerateRandomPassword());

@@ -10,6 +10,26 @@ namespace Chattle
         ManageChannels = 2,
         ReadMessages = 4,
         SendMessages = 8,
-        DeleteMessages = 16
+        DeleteMessages = 16,
+        Administrator = ManageServer | ManageChannels | ReadMessages | SendMessages | DeleteMessages
+    }
+
+    [Flags]
+    public enum AccountGlobalPermission
+    {
+        None = 0,
+        ManageAccounts = 1,
+        Administrator = ManageAccounts
+    }
+
+    [Flags]
+    public enum UserGlobalPermission
+    {
+        None = 0,
+        ManageMessages = 1,
+        ManageChannels = 2,
+        ManageUsers = 4,
+        ManageServers = 8,
+        Administrator = ManageMessages | ManageChannels | ManageUsers | ManageServers
     }
 }

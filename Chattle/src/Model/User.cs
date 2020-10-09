@@ -8,6 +8,7 @@ namespace Chattle
         public string Nickname { get; internal set; }
         public Uri Image { get; internal set; }
         public bool IsActive { get; internal set; }
+        public UserGlobalPermission Permissions { get; internal set; }
         public Guid AccountId { get; private set; }
         public UserType Type { get; private set; }
         public DateTime CreationTime { get; private set; }
@@ -18,6 +19,7 @@ namespace Chattle
             Nickname = nickname;
             Image = GetDefaultUserImage();
             IsActive = true;
+            Permissions = UserGlobalPermission.None;
             AccountId = accountId;
             Type = type;
             CreationTime = DateTime.UtcNow;
@@ -29,6 +31,7 @@ namespace Chattle
             Nickname = nickname;
             Image = image;
             IsActive = true;
+            Permissions = UserGlobalPermission.None;
             AccountId = accountId;
             Type = type;
             CreationTime = DateTime.UtcNow;
