@@ -6,52 +6,20 @@ namespace Chattle
 {
     public class ModelController
     {
-        public IDatabase Database;
-        public Dictionary<Type, IController> Controllers;
+        public AccountController AccountController;
+        public UserController UserController;
+        public ServerController ServerController;
+        public ChannelController ChannelController;
+        public MessageController MessageController;
 
         public ModelController(IDatabase database)
         {
-            Database = database;
-            Controllers = new Dictionary<Type, IController>
-            {
-                {typeof(Account),new AccountController()}
-            };
+            AccountController = new AccountController(database, "Accounts");
+            UserController = new UserController(database, "Users");
+            ServerController = new ServerController(database, "Servers");
+            ChannelController = new ChannelController(database, "Channels");
+            MessageController = new MessageController(database, "Messages");
         }
 
-        public void Create<T>(T item) where T : IIdentifiable
-        {
-            if (Controllers.ContainsKey(typeof(T)))
-            {
-                Controllers[typeof(T)].Create(item, Database);
-            }
-            else
-            {
-                throw new TypeNotSupportedException(typeof(T));
-            }
-        }
-
-        public T Read<T>(Guid id) where T : IIdentifiable
-        {
-            if (Controllers.ContainsKey(typeof(T)))
-            {
-                return Controllers[typeof(T)].Read<T>(id, Database);
-            }
-            else
-            {
-                throw new TypeNotSupportedException(typeof(T));
-            }
-        }
-
-        public void Delete<T>(Guid id) where T : IIdentifiable
-        {
-            if (Controllers.ContainsKey(typeof(T)))
-            {
-                Controllers[typeof(T)].Delete<T>(id, Database);
-            }
-            else
-            {
-                throw new TypeNotSupportedException(typeof(T));
-            }
-        }
     }
 }

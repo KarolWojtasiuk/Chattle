@@ -12,7 +12,9 @@ namespace Chattle.Database
 
         public int Count<T>(string collectionName, Expression<Func<T, bool>> expression) where T : IIdentifiable;
 
-        public void Update<T>(string collectionName, Guid id, T newItem) where T : IIdentifiable;
+        public void Update<T>(string collectionName, Guid id, string fieldName, object value) where T : IIdentifiable;
+
+        public void Replace<T>(string collectionName, Guid id, T newItem) where T : IIdentifiable;
 
         public void Delete<T>(string collectionName, Guid id) where T : IIdentifiable;
     }

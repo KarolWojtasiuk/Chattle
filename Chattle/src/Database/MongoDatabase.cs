@@ -3,6 +3,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Collections.Generic;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 
 namespace Chattle.Database
 {
@@ -40,7 +43,12 @@ namespace Chattle.Database
             return database.GetCollection<T>(collectionName).AsQueryable().Count(expression);
         }
 
-        public void Update<T>(string collectionName, Guid id, T newItem) where T : IIdentifiable
+        public void Update<T>(string collectionName, Guid id, string fieldName, object value) where T : IIdentifiable
+        {
+            database.GetCollection<T>(collectionName).UpdateOne(i => i.Id == id, Builders<T>.Update.Set(fieldName, value));
+        }
+
+        public void Replace<T>(string collectionName, Guid id, T newItem) where T : IIdentifiable
         {
             database.GetCollection<T>(collectionName).ReplaceOne(i => i.Id == id, newItem);
         }

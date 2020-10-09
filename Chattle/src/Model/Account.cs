@@ -12,16 +12,16 @@ namespace Chattle
         public bool IsActive { get; internal set; }
         public DateTime CreationTime { get; private set; }
 
-        [BsonElement] private string passwordHash;
-        [BsonElement] private string passwordSalt;
+        [BsonElement("PasswordHash")] private string _passwordHash;
+        [BsonElement("PasswordSalt")] private string _passwordSalt;
 
         public Account(string username)
         {
             Id = Guid.NewGuid();
             Username = username;
             IsActive = true;
-            passwordHash = String.Empty;
-            passwordSalt = String.Empty;
+            _passwordHash = String.Empty;
+            _passwordSalt = String.Empty;
             ChangePassword(GenerateRandomPassword());
             CreationTime = DateTime.UtcNow;
         }
@@ -30,14 +30,14 @@ namespace Chattle
         {
             using var rfc2898DeriveBytes = new Rfc2898DeriveBytes(password, 16, 100000, HashAlgorithmName.SHA512);
 
-            passwordHash = Convert.ToBase64String(rfc2898DeriveBytes.GetBytes(16));
-            passwordSalt = Convert.ToBase64String(rfc2898DeriveBytes.Salt);
+            _passwordHash = Convert.ToBase64String(rfc2898DeriveBytes.GetBytes(16));
+            _passwordSalt = Convert.ToBase64String(rfc2898DeriveBytes.Salt);
         }
 
         public bool VerifyPassword(string passwordToVerify)
         {
-            var salt = Convert.FromBase64String(passwordSalt);
-            var hash = Convert.FromBase64String(passwordHash);
+            var salt = Convert.FromBase64String(_passwordSalt);
+            var hash = Convert.FromBase64String(_passwordHash);
 
             using var rfc2898DeriveBytes = new Rfc2898DeriveBytes(passwordToVerify, salt, 100000, HashAlgorithmName.SHA512);
 
