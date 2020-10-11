@@ -13,7 +13,7 @@ namespace Chattle
 
             if (Exists<Account>(account.Id, database, collectionName))
             {
-                throw new AlreadyExists<Account>(account.Id);
+                throw new AlreadyExistsException<Account>(account.Id);
             }
         }
 
@@ -23,7 +23,7 @@ namespace Chattle
 
             if (!Exists<Account>(id, database, collectionName))
             {
-                throw new DoesNotExist<Account>(id);
+                throw new DoesNotExistException<Account>(id);
             }
 
             if (!AccountIsActive(callerId, database, collectionName))
@@ -39,7 +39,7 @@ namespace Chattle
 
             if (!Exists<Account>(id, database, collectionName))
             {
-                throw new DoesNotExist<Account>(id);
+                throw new DoesNotExistException<Account>(id);
             }
 
             var firstCondition = id == callerId;
@@ -58,7 +58,7 @@ namespace Chattle
 
             if (!Exists<Account>(id, database, collectionName))
             {
-                throw new DoesNotExist<Account>(id);
+                throw new DoesNotExistException<Account>(id);
             }
 
             var firstCondition = id == callerId;
@@ -76,7 +76,7 @@ namespace Chattle
 
             if (!Exists<Account>(id, database, collectionName))
             {
-                throw new DoesNotExist<Account>(id);
+                throw new DoesNotExistException<Account>(id);
             }
 
             if (!(HasGlobalPermission(callerId, AccountGlobalPermission.ManageAccounts, database, collectionName) && AccountIsActive(callerId, database, collectionName)))
@@ -95,7 +95,7 @@ namespace Chattle
 
             if (Exists<User>(user.Id, database, collectionName))
             {
-                throw new AlreadyExists<User>(user.Id);
+                throw new AlreadyExistsException<User>(user.Id);
             }
 
             var firstCondition = user.AccountId == callerId;
@@ -121,7 +121,7 @@ namespace Chattle
 
             if (!Exists<User>(id, database, collectionName))
             {
-                throw new DoesNotExist<User>(id);
+                throw new DoesNotExistException<User>(id);
             }
 
             if (!AccountIsActive(callerId, database, accountController.CollectionName))
@@ -137,7 +137,7 @@ namespace Chattle
 
             if (!Exists<User>(id, database, collectionName))
             {
-                throw new DoesNotExist<User>(id);
+                throw new DoesNotExistException<User>(id);
             }
 
             var firstCondition = id == callerId;
@@ -156,7 +156,7 @@ namespace Chattle
 
             if (!Exists<User>(id, database, collectionName))
             {
-                throw new DoesNotExist<User>(id);
+                throw new DoesNotExistException<User>(id);
             }
 
             var firstCondition = id == callerId;
@@ -174,7 +174,7 @@ namespace Chattle
 
             if (!Exists<User>(id, database, collectionName))
             {
-                throw new DoesNotExist<User>(id);
+                throw new DoesNotExistException<User>(id);
             }
 
             if (!(HasGlobalPermission(callerId, AccountGlobalPermission.ManageAccounts, database, accountController.CollectionName) && AccountIsActive(callerId, database, collectionName)))
@@ -192,7 +192,7 @@ namespace Chattle
 
             if (Exists<Server>(server.Id, database, collectionName))
             {
-                throw new AlreadyExists<Server>(server.Id);
+                throw new AlreadyExistsException<Server>(server.Id);
             }
 
             var caller = database.Read<User>(userController.CollectionName, u => u.Id == callerId, 1).FirstOrDefault();
@@ -222,7 +222,7 @@ namespace Chattle
 
             if (!Exists<Server>(id, database, collectionName))
             {
-                throw new DoesNotExist<Server>(id);
+                throw new DoesNotExistException<Server>(id);
             }
 
             var caller = database.Read<User>(userController.CollectionName, u => u.Id == callerId, 1).FirstOrDefault();
@@ -245,7 +245,7 @@ namespace Chattle
 
             if (!Exists<Server>(id, database, collectionName))
             {
-                throw new DoesNotExist<Server>(id);
+                throw new DoesNotExistException<Server>(id);
             }
 
             var server = database.Read<Server>(serverController.CollectionName, s => s.Id == id, 1).FirstOrDefault();

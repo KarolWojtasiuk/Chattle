@@ -12,8 +12,13 @@ namespace Chattle
         public InsufficientPermissionsException(Guid id) : base(id, "Object has insufficient permissions.") { }
     }
 
-    public class DoesNotExist<T> : ModelVerificationException<T> where T : IIdentifiable
+    public class DoesNotExistException<T> : ModelVerificationException<T> where T : IIdentifiable
     {
-        public DoesNotExist(Guid id) : base(id, "Object does not exist.") { }
+        public DoesNotExistException(Guid id) : base(id, "Object does not exist.") { }
+    }
+
+    public class AlreadyExistsException<T> : ModelVerificationException<T> where T : IIdentifiable
+    {
+        public AlreadyExistsException(Guid id) : base(id, "Object does not exist.") { }
     }
 }
