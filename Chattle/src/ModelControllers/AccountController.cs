@@ -7,12 +7,12 @@ namespace Chattle
     public class AccountController
     {
         private readonly IDatabase _database;
-        private readonly string _collectionName;
+        public string CollectionName { get; set; }
 
         public AccountController(IDatabase database, string collectionName)
         {
             _database = database;
-            _collectionName = collectionName;
+            CollectionName = collectionName;
         }
 
         private void VerifyUsername(string username, Guid accountId)
@@ -31,40 +31,46 @@ namespace Chattle
         {
             VerifyUsername(account.Username, account.Id);
             PermissionHelper.CreateAccount();
-            _database.Create(_collectionName, account);
+            _database.Create(CollectionName, account);
         }
 
         public Account Get(Guid id, Guid callerId)
         {
-            PermissionHelper.GetAccount(callerId, _database, _collectionName);
-            return _database.Read<Account>(_collectionName, a => a.Id == id, 1).FirstOrDefault();
+            PermissionHelper.GetAccount(callerId, _database, CollectionName);
+            return _database.Read<Account>(CollectionName, a => a.Id == id, 1).FirstOrDefault();
         }
 
         public void Delete(Guid id, Guid callerId)
         {
-            PermissionHelper.DeleteAccount(id, callerId, _database, _collectionName);
-            _database.Delete<Account>(_collectionName, id);
+            PermissionHelper.DeleteAccount(id, callerId, _database, CollectionName);
+            _database.Delete<Account>(CollectionName, id);
         }
 
         public void SetActive(Guid id, bool isActive, Guid callerId)
         {
-            PermissionHelper.ManageAccount(id, callerId, _database, _collectionName);
-            _database.Update<Account>(_collectionName, id, "IsActive", isActive);
+            PermissionHelper.ManageAccount(id, callerId, _database, CollectionName);
+            _database.Update<Account>(CollectionName, id, "IsActive", isActive);
+        }
+
+        public void SetGlobalPermissions(Guid id, AccountGlobalPermission permissions, Guid callerId)
+        {
+            PermissionHelper.ManageAccount(id, callerId, _database, CollectionName);
+            _database.Update<Account>(CollectionName, id, "GlobalPermissions", permissions);
         }
 
         public void SetUsername(Guid id, string username, Guid callerId)
         {
             VerifyUsername(username, id);
-            PermissionHelper.ModifyAccount(id, callerId, _database, _collectionName);
-            _database.Update<Account>(_collectionName, id, "Username", username);
+            PermissionHelper.ModifyAccount(id, callerId, _database, CollectionName);
+            _database.Update<Account>(CollectionName, id, "Username", username);
         }
 
         public void SetPassword(Guid id, string password, Guid callerId)
         {
-            PermissionHelper.ModifyAccount(id, callerId, _database, _collectionName);
-            var account = _database.Read<Account>(_collectionName, a => a.Id == id, 1).FirstOrDefault();
+            PermissionHelper.ModifyAccount(id, callerId, _database, CollectionName);
+            var account = _database.Read<Account>(CollectionName, a => a.Id == id, 1).FirstOrDefault();
             account.ChangePassword(password);
-            _database.Replace(_collectionName, account.Id, account);
+            _database.Replace(CollectionName, account.Id, account);
         }
     }
 }

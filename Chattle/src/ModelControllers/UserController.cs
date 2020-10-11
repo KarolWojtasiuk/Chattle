@@ -1,4 +1,6 @@
 using System;
+using System.Net;
+using System.Linq;
 using Chattle.Database;
 
 namespace Chattle
@@ -6,12 +8,80 @@ namespace Chattle
     public class UserController
     {
         private readonly IDatabase _database;
-        private readonly string _collectionName;
+        private readonly AccountController _accountController;
+        public string CollectionName { get; private set; }
 
-        public UserController(IDatabase database, string collectionName)
+        public UserController(IDatabase database, string collectionName, AccountController accountController)
         {
             _database = database;
-            _collectionName = collectionName;
+            _accountController = accountController;
+            CollectionName = collectionName;
+        }
+
+        private void VerifyNickname(string nickname, Guid userId)
+        {
+            if (nickname.Length < 5)
+            {
+                throw new ModelVerificationException<User>(userId, "Nickname should be at least 5 characters long.");
+            }
+            else if (String.IsNullOrWhiteSpace(nickname))
+            {
+                throw new ModelVerificationException<User>(userId, "Nickname should not be empty or contain only whitespace.");
+            }
+        }
+
+        private void VerifyImage(Uri image, Guid userId)
+        {
+            if (!WebRequest.Create(image).GetResponse().ContentType.ToLower().StartsWith("image/"))
+            {
+                throw new ModelVerificationException<User>(userId, "Image Uri should be of type `image/*`.");
+            }
+        }
+
+        public void Create(User user, Guid callerId)
+        {
+            VerifyNickname(user.Nickname, user.Id);
+            VerifyImage(user.Image, user.Id);
+            PermissionHelper.CreateUser(user, callerId, _database, CollectionName, _accountController);
+            _database.Create(CollectionName, user);
+        }
+
+        public User Get(Guid id, Guid callerId)
+        {
+            PermissionHelper.GetUser(callerId, _database, _accountController);
+            return _database.Read<User>(CollectionName, u => u.Id == id, 1).First();
+        }
+
+        public void Delete(Guid id, Guid callerId)
+        {
+            PermissionHelper.DeleteUser(id, callerId, _database, CollectionName, _accountController);
+            _database.Delete<User>(CollectionName, id);
+        }
+
+        public void SetActive(Guid id, bool active, Guid callerId)
+        {
+            PermissionHelper.ManageUser(id, callerId, _database, CollectionName, _accountController);
+            _database.Update<User>(CollectionName, id, "IsActive", active);
+        }
+
+        public void SetGlobalPermissions(Guid id, UserGlobalPermission permissions, Guid callerId)
+        {
+            PermissionHelper.ManageUser(id, callerId, _database, CollectionName, _accountController);
+            _database.Update<User>(CollectionName, id, "GlobalPermissions", permissions);
+        }
+
+        public void SetNickname(Guid id, string nickname, Guid callerId)
+        {
+            VerifyNickname(nickname, id);
+            PermissionHelper.ModifyUser(id, callerId, _database, CollectionName, _accountController);
+            _database.Update<User>(CollectionName, id, "Nickname", nickname);
+        }
+
+        public void SetImage(Guid id, Uri image, Guid callerId)
+        {
+            VerifyImage(image, id);
+            PermissionHelper.ModifyUser(id, callerId, _database, CollectionName, _accountController);
+            _database.Update<User>(CollectionName, id, "Image", image);
         }
     }
 }

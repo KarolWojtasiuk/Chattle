@@ -15,7 +15,7 @@ namespace Chattle
         public ModelController(IDatabase database)
         {
             AccountController = new AccountController(database, "Accounts");
-            UserController = new UserController(database, "Users");
+            UserController = new UserController(database, "Users", AccountController);
             ServerController = new ServerController(database, "Servers");
             ChannelController = new ChannelController(database, "Channels");
             MessageController = new MessageController(database, "Messages");
