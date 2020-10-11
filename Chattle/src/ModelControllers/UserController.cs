@@ -18,23 +18,23 @@ namespace Chattle
             CollectionName = collectionName;
         }
 
-        private void VerifyNickname(string nickname, Guid userId)
+        private void VerifyNickname(string nickname, Guid id)
         {
             if (nickname.Length < 5)
             {
-                throw new ModelVerificationException<User>(userId, "Nickname should be at least 5 characters long.");
+                throw new ModelVerificationException<User>(id, "Nickname should be at least 5 characters long.");
             }
             else if (String.IsNullOrWhiteSpace(nickname))
             {
-                throw new ModelVerificationException<User>(userId, "Nickname should not be empty or contain only whitespace.");
+                throw new ModelVerificationException<User>(id, "Nickname should not be empty or contain only whitespace.");
             }
         }
 
-        private void VerifyImage(Uri image, Guid userId)
+        private void VerifyImage(Uri image, Guid id)
         {
             if (!WebRequest.Create(image).GetResponse().ContentType.ToLower().StartsWith("image/"))
             {
-                throw new ModelVerificationException<User>(userId, "Image Uri should be of type `image/*`.");
+                throw new ModelVerificationException<User>(id, "Image Uri should be of type `image/*`.");
             }
         }
 
@@ -48,7 +48,7 @@ namespace Chattle
 
         public User Get(Guid id, Guid callerId)
         {
-            PermissionHelper.GetUser(callerId, _database, _accountController);
+            PermissionHelper.GetUser(id, callerId, _database, CollectionName, _accountController);
             return _database.Read<User>(CollectionName, u => u.Id == id, 1).First();
         }
 

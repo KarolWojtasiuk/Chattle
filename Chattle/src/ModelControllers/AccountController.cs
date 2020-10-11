@@ -15,15 +15,15 @@ namespace Chattle
             CollectionName = collectionName;
         }
 
-        private void VerifyUsername(string username, Guid accountId)
+        private void VerifyUsername(string username, Guid id)
         {
             if (username.Length < 5)
             {
-                throw new ModelVerificationException<Account>(accountId, "Username should be at least 5 characters long.");
+                throw new ModelVerificationException<Account>(id, "Username should be at least 5 characters long.");
             }
             else if (String.IsNullOrWhiteSpace(username))
             {
-                throw new ModelVerificationException<Account>(accountId, "Username should not be empty or contain only whitespace.");
+                throw new ModelVerificationException<Account>(id, "Username should not be empty or contain only whitespace.");
             }
         }
 
@@ -36,7 +36,7 @@ namespace Chattle
 
         public Account Get(Guid id, Guid callerId)
         {
-            PermissionHelper.GetAccount(callerId, _database, CollectionName);
+            PermissionHelper.GetAccount(id, callerId, _database, CollectionName);
             return _database.Read<Account>(CollectionName, a => a.Id == id, 1).FirstOrDefault();
         }
 

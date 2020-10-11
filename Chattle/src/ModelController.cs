@@ -16,7 +16,7 @@ namespace Chattle
         {
             AccountController = new AccountController(database, "Accounts");
             UserController = new UserController(database, "Users", AccountController);
-            ServerController = new ServerController(database, "Servers");
+            ServerController = new ServerController(database, "Servers", UserController);
             ChannelController = new ChannelController(database, "Channels");
             MessageController = new MessageController(database, "Messages");
         }
