@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using Chattle.Database;
 
 namespace Chattle
@@ -238,7 +239,7 @@ namespace Chattle
             }
         }
 
-        public static void ModifyOrDeleteServer(Guid id, Guid callerId, IDatabase database, string collectionName, UserController userController, AccountController accountController, ServerController serverController)
+        public static void DeleteServer(Guid id, Guid callerId, IDatabase database, string collectionName, UserController userController, AccountController accountController, ServerController serverController)
         {
             //? 1. Active user with active account can delete own servers;
             //? 2. Active user with active account and global permission `ManageServers` can delete other servers;
@@ -256,9 +257,146 @@ namespace Chattle
 
             if (!(firstCondition || secondCondition))
             {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!UserIsActive(callerId, database, userController.CollectionName))
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!AccountIsActive(caller.AccountId, database, accountController.CollectionName))
+            {
+                throw new InsufficientPermissionsException<Account>(caller.AccountId);
+            }
+        }
+
+        public static void ModifyServer(Guid id, Guid callerId, IDatabase database, string collectionName, UserController userController, AccountController accountController, ServerController serverController)
+        {
+            //? 1. Active user with active account can modify own servers;
+            //? 2. Active user with active account and permission `ManageServer` can modify server;
+            //? 3. Active user with active account and global permission `ManageServers` can modify other servers;
+
+            if (!Exists<Server>(id, database, collectionName))
+            {
+                throw new DoesNotExistException<Server>(id);
+            }
+
+            var server = database.Read<Server>(serverController.CollectionName, s => s.Id == id, 1).FirstOrDefault();
+            var caller = database.Read<User>(userController.CollectionName, u => u.Id == callerId, 1).FirstOrDefault();
+
+            var firstCondition = server.OwnerId == callerId;
+            var secondCondition = HasPermission(callerId, server.Roles, Permission.ManageServer);
+            var thirdCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageServers);
+
+            if (!(firstCondition || secondCondition || thirdCondition))
+            {
                 throw new InsufficientPermissionsException<Account>(callerId);
             }
 
+            if (!UserIsActive(callerId, database, userController.CollectionName))
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!AccountIsActive(caller.AccountId, database, accountController.CollectionName))
+            {
+                throw new InsufficientPermissionsException<Account>(caller.AccountId);
+            }
+        }
+        #endregion
+
+        #region Channel
+        public static void CreateChannel(Channel channel, Guid callerId, IDatabase database, string collectionName, UserController userController, AccountController accountController, ServerController serverController)
+        {
+            //? 1. Active user with active account can create channels on own server;
+            //? 2. Active user with active account and permission `ManageChannels` can create channels on server;
+            //? 3. Active user with active account and global permission `ManageServers` can create channels as other user;
+
+            if (!Exists<Server>(channel.ServerId, database, collectionName))
+            {
+                throw new DoesNotExistException<Server>(channel.ServerId);
+            }
+
+            var server = database.Read<Server>(serverController.CollectionName, s => s.Id == channel.ServerId, 1).FirstOrDefault();
+            var caller = database.Read<User>(userController.CollectionName, u => u.Id == callerId, 1).FirstOrDefault();
+
+            var firstCondition = channel.ServerId == server.Id && server.OwnerId == callerId;
+            var secondCondition = channel.ServerId == server.Id && channel.AuthorId == callerId && HasPermission(callerId, server.Roles, Permission.ManageServer);
+            var thirdCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageServers);
+
+            if (!(firstCondition || secondCondition || thirdCondition))
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!UserIsActive(callerId, database, userController.CollectionName))
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!AccountIsActive(caller.AccountId, database, accountController.CollectionName))
+            {
+                throw new InsufficientPermissionsException<Account>(caller.AccountId);
+            }
+        }
+
+        public static void GetChannel(Guid id, Guid callerId, IDatabase database, string collectionName, UserController userController, AccountController accountController, ServerController serverController)
+        {
+            //? 1. Active user with active account with assigned basic role can get channels;
+            //? 2. Active user with active account and global permission `ManageServers` can get channels;
+
+            if (!Exists<Channel>(id, database, collectionName))
+            {
+                throw new DoesNotExistException<Server>(id);
+            }
+
+            var channel = database.Read<Channel>(collectionName, c => c.Id == id).FirstOrDefault();
+            var server = database.Read<Server>(serverController.CollectionName, s => s.Id == channel.ServerId, 1).FirstOrDefault();
+            var caller = database.Read<User>(userController.CollectionName, u => u.Id == callerId, 1).FirstOrDefault();
+
+            var firstCondition = server.Roles.FirstOrDefault(r => r.Id == Guid.Empty).Users.Contains(callerId);
+            var secondCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageServers);
+
+            if (!(firstCondition || secondCondition))
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!UserIsActive(callerId, database, userController.CollectionName))
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!AccountIsActive(caller.AccountId, database, accountController.CollectionName))
+            {
+                throw new InsufficientPermissionsException<Account>(caller.AccountId);
+            }
+        }
+
+        public static void ModifyOrDeleteChannel(Guid id, Guid callerId, IDatabase database, string collectionName, UserController userController, AccountController accountController, ServerController serverController)
+        {
+            //? 1. Active user with active account can modify or delete channels on own server;
+            //? 2. Active user with active account and permission `ManageChannels` can modify or delete channels on server;
+            //? 3. Active user with active account and global permission `ManageServers` can modify or delete channels;
+
+            if (!Exists<Channel>(id, database, collectionName))
+            {
+                throw new DoesNotExistException<Channel>(id);
+            }
+
+            var channel = database.Read<Channel>(collectionName, c => c.Id == id).FirstOrDefault();
+            var server = database.Read<Server>(serverController.CollectionName, s => s.Id == channel.ServerId, 1).FirstOrDefault();
+            var caller = database.Read<User>(userController.CollectionName, u => u.Id == callerId, 1).FirstOrDefault();
+
+            var firstCondition = channel.ServerId == server.Id && server.OwnerId == callerId;
+            var secondCondition = channel.ServerId == server.Id && channel.AuthorId == callerId && HasPermission(callerId, server.Roles, Permission.ManageServer);
+            var thirdCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageServers);
+
+            if (!(firstCondition || secondCondition || thirdCondition))
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
 
             if (!UserIsActive(callerId, database, userController.CollectionName))
             {
@@ -280,6 +418,21 @@ namespace Chattle
         private static bool HasGlobalPermission(User user, UserGlobalPermission permission)
         {
             return user.GlobalPermissions.HasFlag(permission);
+        }
+
+        public static bool HasPermission(Guid userId, List<Role> roles, Permission permission)
+        {
+            foreach (var role in roles)
+            {
+                if (role.Users.Contains(userId))
+                {
+                    if (role.Permission.HasFlag(permission))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         private static bool AccountIsActive(Guid id, IDatabase database, string collectionName)
