@@ -30,7 +30,7 @@ namespace Chattle
         public void Create(Account account)
         {
             VerifyUsername(account.Username, account.Id);
-            PermissionHelper.CreateAccount();
+            PermissionHelper.CreateAccount(account, _database, CollectionName);
             _database.Create(CollectionName, account);
         }
 

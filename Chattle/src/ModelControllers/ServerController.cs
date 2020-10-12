@@ -79,34 +79,34 @@ namespace Chattle
 
         public void Delete(Guid id, Guid callerId)
         {
-            PermissionHelper.ModifyOrDeleteServer(id, callerId, _database, CollectionName, _userController, _accountController, this);
+            PermissionHelper.DeleteServer(id, callerId, _database, CollectionName, _userController, _accountController, this);
             _database.Delete<Server>(CollectionName, id);
         }
 
         public void SetName(Guid id, string name, Guid callerId)
         {
             VerifyName(name, id);
-            PermissionHelper.ModifyOrDeleteServer(id, callerId, _database, CollectionName, _userController, _accountController, this);
+            PermissionHelper.ModifyServer(id, callerId, _database, CollectionName, _userController, _accountController, this);
             _database.Update<Server>(CollectionName, id, "Name", name);
         }
 
         public void SetDescription(Guid id, string description, Guid callerId)
         {
-            PermissionHelper.ModifyOrDeleteServer(id, callerId, _database, CollectionName, _userController, _accountController, this);
+            PermissionHelper.ModifyServer(id, callerId, _database, CollectionName, _userController, _accountController, this);
             _database.Update<Server>(CollectionName, id, "Description", description);
         }
 
         public void SetImage(Guid id, Uri image, Guid callerId)
         {
             VerifyImage(image, id);
-            PermissionHelper.ModifyOrDeleteServer(id, callerId, _database, CollectionName, _userController, _accountController, this);
+            PermissionHelper.ModifyServer(id, callerId, _database, CollectionName, _userController, _accountController, this);
             _database.Update<Server>(CollectionName, id, "Image", image);
         }
 
         public void SetRoles(Guid id, List<Role> roles, Guid callerId)
         {
             VerifyRoles(roles, id);
-            PermissionHelper.ModifyOrDeleteServer(id, callerId, _database, CollectionName, _userController, _accountController, this);
+            PermissionHelper.ModifyServer(id, callerId, _database, CollectionName, _userController, _accountController, this);
             _database.Update<Server>(CollectionName, id, "Roles", roles);
         }
     }
