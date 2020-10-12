@@ -68,6 +68,7 @@ namespace Chattle
             VerifyRoles(server.Roles, server.Id);
             VerifyImage(server.Image, server.Id);
             PermissionHelper.CreateServer(server, callerId, _database, CollectionName, _userController, _accountController);
+            _database.Create(CollectionName, server);
         }
 
         public Server Get(Guid id, Guid callerId)
