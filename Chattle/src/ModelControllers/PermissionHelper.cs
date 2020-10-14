@@ -110,7 +110,7 @@ namespace Chattle
                 }
             }
 
-            if (!((firstCondition || secondCondition) && AccountIsActive(callerId, database, collectionName)))
+            if (!((firstCondition || secondCondition) && AccountIsActive(callerId, database, accountsCollection)))
             {
                 throw new InsufficientPermissionsException<Account>(callerId);
             }
@@ -141,10 +141,12 @@ namespace Chattle
                 throw new DoesNotExistException<User>(id);
             }
 
-            var firstCondition = id == callerId;
+            var user = database.Read<User>(collectionName, u => u.Id == id, 1).FirstOrDefault();
+
+            var firstCondition = user.AccountId == callerId;
             var secondCondition = HasGlobalPermission(callerId, AccountGlobalPermission.ManageAccounts, database, accountsCollection);
 
-            if (!((firstCondition || secondCondition) && AccountIsActive(callerId, database, collectionName)))
+            if (!((firstCondition || secondCondition) && AccountIsActive(callerId, database, accountsCollection)))
             {
                 throw new InsufficientPermissionsException<Account>(callerId);
             }
@@ -160,10 +162,12 @@ namespace Chattle
                 throw new DoesNotExistException<User>(id);
             }
 
-            var firstCondition = id == callerId;
+            var user = database.Read<User>(collectionName, u => u.Id == id, 1).FirstOrDefault();
+
+            var firstCondition = user.AccountId == callerId;
             var secondCondition = HasGlobalPermission(callerId, AccountGlobalPermission.ManageAccounts, database, accountsCollection);
 
-            if (!((firstCondition || secondCondition) && AccountIsActive(callerId, database, collectionName)))
+            if (!((firstCondition || secondCondition) && AccountIsActive(callerId, database, accountsCollection)))
             {
                 throw new InsufficientPermissionsException<Account>(callerId);
             }
@@ -178,7 +182,7 @@ namespace Chattle
                 throw new DoesNotExistException<User>(id);
             }
 
-            if (!(HasGlobalPermission(callerId, AccountGlobalPermission.ManageAccounts, database, accountsCollection) && AccountIsActive(callerId, database, collectionName)))
+            if (!(HasGlobalPermission(callerId, AccountGlobalPermission.ManageAccounts, database, accountsCollection) && AccountIsActive(callerId, database, accountsCollection)))
             {
                 throw new InsufficientPermissionsException<Account>(callerId);
             }
@@ -194,6 +198,11 @@ namespace Chattle
             if (Exists<Server>(server.Id, database, collectionName))
             {
                 throw new AlreadyExistsException<Server>(server.Id);
+            }
+
+            if (!Exists<User>(callerId, database, usersCollection))
+            {
+                throw new DoesNotExistException<User>(callerId);
             }
 
             var caller = database.Read<User>(usersCollection, u => u.Id == callerId, 1).FirstOrDefault();
@@ -239,7 +248,7 @@ namespace Chattle
             }
         }
 
-        public static void DeleteServer(Guid id, Guid callerId, IDatabase database, string collectionName, string usersCollection, string accountsCollection, string serversCollection)
+        public static void DeleteServer(Guid id, Guid callerId, IDatabase database, string collectionName, string usersCollection, string accountsCollection)
         {
             //? 1. Active user with active account can delete own servers;
             //? 2. Active user with active account and global permission `ManageServers` can delete other servers;
@@ -249,7 +258,7 @@ namespace Chattle
                 throw new DoesNotExistException<Server>(id);
             }
 
-            var server = database.Read<Server>(serversCollection, s => s.Id == id, 1).FirstOrDefault();
+            var server = database.Read<Server>(collectionName, s => s.Id == id, 1).FirstOrDefault();
             var caller = database.Read<User>(usersCollection, u => u.Id == callerId, 1).FirstOrDefault();
 
             var firstCondition = server.OwnerId == callerId;
@@ -350,6 +359,7 @@ namespace Chattle
         {
             //? 1. Active user with active account with assigned basic role can get channels;
             //? 2. Active user with active account and global permission `ManageChannels` can get channels;
+            //? 3. Active user with active account can get channels on own servers;
 
             if (!Exists<Channel>(id, database, collectionName))
             {
@@ -362,8 +372,9 @@ namespace Chattle
 
             var firstCondition = server.Roles.FirstOrDefault(r => r.Id == Guid.Empty).Users.Contains(callerId);
             var secondCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageChannels);
+            var thirdCondition = callerId == server.OwnerId;
 
-            if (!(firstCondition || secondCondition))
+            if (!(firstCondition || secondCondition || thirdCondition))
             {
                 throw new InsufficientPermissionsException<User>(callerId);
             }
@@ -420,6 +431,7 @@ namespace Chattle
         {
             //? 1. Active user with active account with permission `SendMessages` can create messages;
             //? 2. Active user with active account and global permission `ManageMessages` can create messages;
+            //? 3. Active user with active account can create messages on own servers;
 
             if (Exists<Message>(message.Id, database, collectionName))
             {
@@ -437,8 +449,9 @@ namespace Chattle
 
             var firstCondition = HasPermission(callerId, server.Roles, Permission.SendMessages);
             var secondCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageMessages);
+            var thirdCondition = callerId == server.OwnerId;
 
-            if (!(firstCondition || secondCondition))
+            if (!(firstCondition || secondCondition || thirdCondition))
             {
                 throw new InsufficientPermissionsException<User>(callerId);
             }
@@ -458,12 +471,12 @@ namespace Chattle
         {
             //? 1. Active user with active account with permission `ReadMessages` can get messages;
             //? 2. Active user with active account and global permission `ManageMessages` can get messages;
+            //? 3. Active user with active account can get messages on own servers;
 
             if (!Exists<Message>(id, database, collectionName))
             {
                 throw new DoesNotExistException<Message>(id);
             }
-
 
             var message = database.Read<Message>(collectionName, m => m.Id == id, 1).FirstOrDefault();
             var channel = database.Read<Channel>(channelsCollection, c => c.Id == message.ChannelId, 1).FirstOrDefault();
@@ -472,8 +485,9 @@ namespace Chattle
 
             var firstCondition = HasPermission(callerId, server.Roles, Permission.ReadMessages);
             var secondCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageServers);
+            var thirdCondition = callerId == server.OwnerId;
 
-            if (!(firstCondition || secondCondition))
+            if (!(firstCondition || secondCondition || thirdCondition))
             {
                 throw new InsufficientPermissionsException<User>(callerId);
             }
@@ -493,8 +507,9 @@ namespace Chattle
         {
             //? 1. Active user with active account with permission `ReadMessages` can get messages;
             //? 2. Active user with active account and global permission `ManageMessages` can get messages;
+            //? 3. Active user with active account can get messages on own servers;
 
-            if (!Exists<Channel>(channelId, database, collectionName))
+            if (!Exists<Channel>(channelId, database, channelsCollection))
             {
                 throw new DoesNotExistException<Channel>(channelId);
             }
@@ -505,8 +520,9 @@ namespace Chattle
 
             var firstCondition = HasPermission(callerId, server.Roles, Permission.ReadMessages);
             var secondCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageServers);
+            var thirdCondition = callerId == server.OwnerId;
 
-            if (!(firstCondition || secondCondition))
+            if (!(firstCondition || secondCondition || thirdCondition))
             {
                 throw new InsufficientPermissionsException<User>(callerId);
             }
@@ -559,8 +575,9 @@ namespace Chattle
             //? 1. Active user with active account with permission `SendMessages` can delete own messages;
             //? 2. Active user with active account and permission `DeleteMessages` can delete messages;
             //? 3. Active user with active account and global permission `ManageMessages` can delete messages;
+            //? 4. Active user with active account can delete messages on own servers;
 
-            if (!Exists<Message>(id, database, channelsCollection))
+            if (!Exists<Message>(id, database, collectionName))
             {
                 throw new DoesNotExistException<Message>(id);
             }
@@ -573,8 +590,9 @@ namespace Chattle
             var firstCondition = message.UserId == callerId && HasPermission(callerId, server.Roles, Permission.SendMessages);
             var secondCondition = HasPermission(callerId, server.Roles, Permission.DeleteMessages);
             var thirdCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageMessages);
+            var fourthCondition = callerId == server.OwnerId;
 
-            if (!(firstCondition || secondCondition || thirdCondition))
+            if (!(firstCondition || secondCondition || thirdCondition || fourthCondition))
             {
                 throw new InsufficientPermissionsException<User>(callerId);
             }

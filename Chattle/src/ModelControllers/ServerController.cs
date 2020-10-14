@@ -81,7 +81,7 @@ namespace Chattle
 
         public void Delete(Guid id, Guid callerId)
         {
-            PermissionHelper.DeleteServer(id, callerId, _database, _collectionName, _usersCollection, _accountsCollection, _collectionName);
+            PermissionHelper.DeleteServer(id, callerId, _database, _collectionName, _usersCollection, _accountsCollection);
             _database.Delete<Server>(_collectionName, id);
             _modelCleaner.CleanFromServer(id);
         }
@@ -109,7 +109,6 @@ namespace Chattle
         public void SetDefaultImage(Guid id, Guid callerId)
         {
             var image = DefaultImage.GetServerImage(id);
-            VerifyImage(image, id);
             PermissionHelper.ModifyServer(id, callerId, _database, _collectionName, _usersCollection, _accountsCollection, _collectionName);
             _database.Update<Server>(_collectionName, id, "Image", image);
         }

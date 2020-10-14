@@ -9,17 +9,15 @@ namespace Chattle
     {
         private readonly IDatabase _database;
         private readonly string _collectionName;
-        private readonly ModelCleaner _modelCleaner;
         private readonly string _accountsCollection;
         private readonly string _usersCollection;
         private readonly string _serversCollection;
         private readonly string _channelsCollection;
 
-        public MessageController(IDatabase database, string collectionName, ModelCleaner modelCleaner, string accountsCollection, string usersCollection, string serversCollection, string channelsCollection)
+        public MessageController(IDatabase database, string collectionName, string accountsCollection, string usersCollection, string serversCollection, string channelsCollection)
         {
             _database = database;
             _collectionName = collectionName;
-            _modelCleaner = modelCleaner;
             _accountsCollection = accountsCollection;
             _usersCollection = usersCollection;
             _serversCollection = serversCollection;

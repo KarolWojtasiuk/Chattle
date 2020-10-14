@@ -90,7 +90,6 @@ namespace Chattle
         public void SetDefaultImage(Guid id, Guid callerId)
         {
             var image = DefaultImage.GetUserImage(id);
-            VerifyImage(image, id);
             PermissionHelper.ModifyUser(id, callerId, _database, _collectionName, _accountsCollection);
             _database.Update<User>(_collectionName, id, "Image", image);
         }
