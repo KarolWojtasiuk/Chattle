@@ -489,6 +489,39 @@ namespace Chattle
             }
         }
 
+        public static void GetMessages(Guid channelId, Guid callerId, IDatabase database, string collectionName, UserController userController, AccountController accountController, ServerController serverController, ChannelController channelController)
+        {
+            //? 1. Active user with active account with permission `ReadMessages` can get messages;
+            //? 2. Active user with active account and global permission `ManageMessages` can get messages;
+
+            if (!Exists<Channel>(channelId, database, collectionName))
+            {
+                throw new DoesNotExistException<Channel>(channelId);
+            }
+
+            var channel = database.Read<Channel>(channelController.CollectionName, c => c.Id == channelId).FirstOrDefault();
+            var server = database.Read<Server>(serverController.CollectionName, s => s.Id == channel.ServerId, 1).FirstOrDefault();
+            var caller = database.Read<User>(userController.CollectionName, u => u.Id == callerId, 1).FirstOrDefault();
+
+            var firstCondition = HasPermission(callerId, server.Roles, Permission.ReadMessages);
+            var secondCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageServers);
+
+            if (!(firstCondition || secondCondition))
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!UserIsActive(callerId, database, userController.CollectionName))
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!AccountIsActive(caller.AccountId, database, accountController.CollectionName))
+            {
+                throw new InsufficientPermissionsException<Account>(caller.AccountId);
+            }
+        }
+
         public static void ModifyMessage(Guid id, Guid callerId, IDatabase database, string collectionName, UserController userController, AccountController accountController, ServerController serverController, ChannelController channelController)
         {
             //? 1. Active user with active account with permission `SendMessages` can modify own messages;
