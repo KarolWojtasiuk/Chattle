@@ -8,52 +8,29 @@ namespace Chattle.Tests
     public class ModelControllerTests
     {
         public const string ConnectionString = "mongodb+srv://testUser:testPassword@cluster-ktbsc.azure.mongodb.net";
-        public static IDatabase Database1 = new MongoDatabase(ConnectionString, "TestDatabase1");
-        public static IDatabase Database2 = new MongoDatabase(ConnectionString, "TestDatabase2");
+        public static IDatabase Database = new MongoDatabase(ConnectionString, "TestDatabase");
 
-        [Fact]
-        public void DatabasesTest()
-        {
-            var account = new Account("testAccount");
-            var modelController = new ModelController(Database1);
-            modelController.Databases.Add(Database2);
-
-            modelController.CreateAccount(account);
-            Assert.Equal(account, Database1.Read<Account>("Accounts", a => a.Id == account.Id).FirstOrDefault());
-            Assert.Equal(account, Database2.Read<Account>("Accounts", a => a.Id == account.Id).FirstOrDefault());
-            Assert.Equal(account, modelController.FindAccount(account.Id));
-
-            modelController.DeleteAccount(account);
-            Assert.Null(modelController.FindAccount(account.Id));
-            Assert.Null(Database1.Read<Account>("Accounts", a => a.Id == account.Id).FirstOrDefault());
-            Assert.Null(Database2.Read<Account>("Accounts", a => a.Id == account.Id).FirstOrDefault());
-        }
         [Fact]
         public void AccountTest()
         {
+            var modelController = new ModelController(Database);
+
             var account = new Account("testAccount");
-            account.ChangePassword("testPassword");
+            modelController.AccountController.Create(account);
+            modelController.AccountController.SetPassword(account.Id, "testPassword", account.Id);
+            Assert.Equal(account, modelController.AccountController.Get(account.Id, account.Id));
 
-            var modelController = new ModelController(Database1);
+            Assert.True(modelController.AccountController.Get(account.Id, account.Id).IsActive);
 
-            modelController.CreateAccount(account);
-            Assert.Equal(account, modelController.FindAccount(account.Id));
+            modelController.AccountController.SetUsername(account.Id, "newUsername", account.Id);
+            Assert.Equal("newUsername", modelController.AccountController.Get(account.Id, account.Id).Username);
 
-            modelController.DeactivateAccount(account);
-            Assert.False(modelController.FindAccount(account.Id).IsActive);
+            Assert.True(modelController.AccountController.Get(account.Id, account.Id).VerifyPassword("testPassword"));
+            modelController.AccountController.SetPassword(account.Id, "TestPassword", account.Id);
+            Assert.False(modelController.AccountController.Get(account.Id, account.Id).VerifyPassword("testPassword"));
 
-            modelController.ActivateAccount(account);
-            Assert.True(modelController.FindAccount(account.Id).IsActive);
-
-            modelController.ChangeAccountUsername(account, "newUsername");
-            Assert.Equal("newUsername", modelController.FindAccount(account.Id).Username);
-
-            Assert.True(modelController.FindAccount(account.Id).VerifyPassword("testPassword"));
-            modelController.ChangeAccountPassword(account, "TestPassword");
-            Assert.False(modelController.FindAccount(account.Id).VerifyPassword("testPassword"));
-
-            modelController.DeleteAccount(account);
-            Assert.Null(modelController.FindAccount(account.Id));
+            modelController.AccountController.Delete(account.Id, account.Id);
+            Assert.Throws<DoesNotExistException<Account>>(() => modelController.AccountController.Get(account.Id, account.Id));
         }
 
         [Fact]
@@ -63,111 +40,89 @@ namespace Chattle.Tests
             var user1 = new User("testUser", account.Id, UserType.User);
             var user2 = new User("testUser2", account.Id, UserType.User);
 
-            var modelController = new ModelController(Database1);
+            var modelController = new ModelController(Database);
 
-            Assert.Throws<DoesNotExistsException>(() => modelController.CreateUser(user1));
-            modelController.CreateAccount(account);
-            modelController.CreateUser(user1);
+            Assert.Throws<InsufficientPermissionsException<Account>>(() => modelController.UserController.Create(user1, account.Id));
+            modelController.AccountController.Create(account);
+            modelController.UserController.Create(user1, account.Id);
 
-            Assert.Equal(user1, modelController.FindUser(user1.Id));
+            Assert.Equal(user1, modelController.UserController.Get(user1.Id, account.Id));
 
-            modelController.DeactivateUser(user1);
-            Assert.False(modelController.FindUser(user1.Id).IsActive);
+            modelController.UserController.SetNickname(user1.Id, "newNickname", account.Id);
+            Assert.Equal("newNickname", modelController.UserController.Get(user1.Id, account.Id).Nickname);
 
-            modelController.ActivateUser(user1);
-            Assert.True(modelController.FindUser(user1.Id).IsActive);
-
-            modelController.ChangeUserNickname(user1, "newNickname");
-            Assert.Equal("newNickname", modelController.FindUser(user1.Id).Nickname);
-
-            modelController.ChangeUserImage(user1, new Uri("https://api.adorable.io/avatars/512/TestUser"));
-            Assert.Equal(new Uri("https://api.adorable.io/avatars/512/TestUser"), modelController.FindUser(user1.Id).Image);
-
-            modelController.RestoreDefaultUserImage(user1);
-            Assert.Equal(DefaultImage.GetUserImage(user1.Id), modelController.FindUser(user1.Id).Image);
-
-            modelController.DeleteUser(user1);
-            modelController.DeleteAccount(account);
-            Assert.Null(modelController.FindUser(user1.Id));
-            Assert.Null(modelController.FindAccount(account.Id));
+            modelController.AccountController.Delete(account.Id, account.Id);
+            Assert.Throws<DoesNotExistException<User>>(() => modelController.UserController.Get(user1.Id, account.Id));
+            Assert.Throws<DoesNotExistException<Account>>(() => modelController.AccountController.Get(account.Id, account.Id));
         }
 
         [Fact]
         public void ServerTest()
         {
-            var modelController = new ModelController(Database1);
+            var modelController = new ModelController(Database);
 
             var account = new Account("testAccount");
             var user = new User("testUser", account.Id, UserType.User);
             var server = new Server("testServer", user.Id);
 
-            Assert.Throws<DoesNotExistsException>(() => modelController.CreateServer(server));
-            modelController.CreateAccount(account);
-            modelController.CreateUser(user);
-            modelController.CreateServer(server);
+            Assert.Throws<DoesNotExistException<User>>(() => modelController.ServerController.Create(server, user.Id));
+            modelController.AccountController.Create(account);
+            modelController.UserController.Create(user, account.Id);
+            modelController.ServerController.Create(server, user.Id);
 
-            Assert.Equal(server, modelController.FindServer(server.Id));
+            Assert.Equal(server, modelController.ServerController.Get(server.Id, user.Id));
 
-            modelController.ChangeServerName(server, "newName", user.Id);
-            Assert.Equal("newName", modelController.FindServer(server.Id).Name);
+            modelController.ServerController.SetName(server.Id, "newName", user.Id);
+            Assert.Equal("newName", modelController.ServerController.Get(server.Id, user.Id).Name);
 
-            modelController.ChangeServerDescription(server, "newDescription", user.Id);
-            Assert.Equal("newDescription", modelController.FindServer(server.Id).Description);
+            modelController.ServerController.SetDescription(server.Id, "newDescription", user.Id);
+            Assert.Equal("newDescription", modelController.ServerController.Get(server.Id, user.Id).Description);
 
-            modelController.ChangeServerImage(server, new Uri("https://api.adorable.io/avatars/512/TestServer"), user.Id);
-            Assert.Equal(new Uri("https://api.adorable.io/avatars/512/TestServer"), modelController.FindServer(server.Id).Image);
+            modelController.ServerController.SetName(server.Id, "newName", user.Id);
+            Assert.Equal("newName", modelController.ServerController.Get(server.Id, user.Id).Name);
 
-            modelController.ChangeServerName(server, "newName", user.Id);
-            Assert.Equal("newName", modelController.FindServer(server.Id).Name);
-
-            modelController.ChangeServerRoles(server, user.Id);
-
-            modelController.DeleteServer(server, user.Id);
-            modelController.DeleteUser(user);
-            modelController.DeleteAccount(account);
-            Assert.Null(modelController.FindUser(user.Id));
-            Assert.Null(modelController.FindAccount(account.Id));
-            Assert.Null(modelController.FindServer(server.Id));
+            modelController.AccountController.Delete(account.Id, account.Id);
+            Assert.Throws<DoesNotExistException<Account>>(() => modelController.AccountController.Get(account.Id, account.Id));
+            Assert.Throws<DoesNotExistException<User>>(() => modelController.UserController.Get(user.Id, account.Id));
+            Assert.Throws<DoesNotExistException<Server>>(() => modelController.ServerController.Get(server.Id, user.Id));
         }
 
         [Fact]
         public void ChannelTest()
         {
-            var modelController = new ModelController(Database1);
+            var modelController = new ModelController(Database);
 
             var account = new Account("testAccount");
             var user = new User("testUser", account.Id, UserType.User);
             var server = new Server("testServer", user.Id);
             var channel = new Channel("testChannel", server.Id, user.Id);
 
-            Assert.Throws<DoesNotExistsException>(() => modelController.CreateChannel(channel, user.Id));
-            modelController.CreateAccount(account);
-            modelController.CreateUser(user);
-            modelController.CreateServer(server);
-            modelController.CreateChannel(channel, user.Id);
+            Assert.Throws<DoesNotExistException<Server>>(() => modelController.ChannelController.Create(channel, user.Id));
+            modelController.AccountController.Create(account);
+            modelController.UserController.Create(user, account.Id);
+            modelController.ServerController.Create(server, user.Id);
+            modelController.ChannelController.Create(channel, user.Id);
+            server.Roles.First().Users.Add(user.Id);
 
-            Assert.Equal(channel, modelController.FindChannel(channel.Id));
+            Assert.Equal(channel, modelController.ChannelController.Get(channel.Id, user.Id));
 
-            modelController.ChangeChannelName(channel, "newName", user.Id);
-            Assert.Equal("newName", modelController.FindChannel(channel.Id).Name);
+            modelController.ChannelController.SetName(channel.Id, "newName", user.Id);
+            Assert.Equal("newName", modelController.ChannelController.Get(channel.Id, user.Id).Name);
 
-            modelController.ChangeChannelDescription(channel, "newDescription", user.Id);
-            Assert.Equal("newDescription", modelController.FindChannel(channel.Id).Description);
+            modelController.ChannelController.SetDescription(channel.Id, "newDescription", user.Id);
+            Assert.Equal("newDescription", modelController.ChannelController.Get(channel.Id, user.Id).Description);
 
-            modelController.DeleteChannel(channel, user.Id);
-            modelController.DeleteServer(server, user.Id);
-            modelController.DeleteUser(user);
-            modelController.DeleteAccount(account);
-            Assert.Null(modelController.FindUser(user.Id));
-            Assert.Null(modelController.FindAccount(account.Id));
-            Assert.Null(modelController.FindServer(server.Id));
-            Assert.Null(modelController.FindChannel(channel.Id));
+            modelController.AccountController.Delete(account.Id, account.Id);
+            Assert.Throws<DoesNotExistException<Account>>(() => modelController.AccountController.Get(account.Id, account.Id));
+            Assert.Throws<DoesNotExistException<User>>(() => modelController.UserController.Get(user.Id, account.Id));
+            Assert.Throws<DoesNotExistException<Server>>(() => modelController.ServerController.Get(server.Id, user.Id));
+            Assert.Throws<DoesNotExistException<Channel>>(() => modelController.ChannelController.Get(channel.Id, user.Id));
         }
 
         [Fact]
         public void MessageTest()
         {
-            var modelController = new ModelController(Database1);
+            var modelController = new ModelController(Database);
 
             var account = new Account("testAccount");
             var user = new User("testUser", account.Id, UserType.User);
@@ -175,26 +130,23 @@ namespace Chattle.Tests
             var channel = new Channel("testChannel", server.Id, user.Id);
             var message = new Message("testMessage", channel.Id, user.Id);
 
-            Assert.Throws<DoesNotExistsException>(() => modelController.CreateMessage(message));
-            modelController.CreateAccount(account);
-            modelController.CreateUser(user);
-            modelController.CreateServer(server);
-            modelController.CreateChannel(channel, user.Id);
-            modelController.CreateMessage(message);
+            Assert.Throws<DoesNotExistException<Channel>>(() => modelController.MessageController.Create(message, user.Id));
+            modelController.AccountController.Create(account);
+            modelController.UserController.Create(user, account.Id);
+            modelController.ServerController.Create(server, user.Id);
+            modelController.ChannelController.Create(channel, user.Id);
+            modelController.MessageController.Create(message, user.Id);
 
-            Assert.Equal(message, modelController.FindMessages(channel.Id, 1, user.Id).FirstOrDefault());
+            Assert.Equal(message, modelController.MessageController.Get(channel.Id, 1, user.Id).FirstOrDefault());
 
-            modelController.DeleteMessage(message, user.Id);
-            Assert.Null(modelController.FindMessages(channel.Id, 1, user.Id).FirstOrDefault(m => m.Id == message.Id));
+            modelController.MessageController.Delete(message.Id, user.Id);
+            Assert.Throws<DoesNotExistException<Message>>(() => modelController.MessageController.Get(message.Id, user.Id));
 
-            modelController.DeleteChannel(channel, user.Id);
-            modelController.DeleteServer(server, user.Id);
-            modelController.DeleteUser(user);
-            modelController.DeleteAccount(account);
-            Assert.Null(modelController.FindUser(user.Id));
-            Assert.Null(modelController.FindAccount(account.Id));
-            Assert.Null(modelController.FindServer(server.Id));
-            Assert.Null(modelController.FindChannel(channel.Id));
+            modelController.AccountController.Delete(account.Id, account.Id);
+            Assert.Throws<DoesNotExistException<Account>>(() => modelController.AccountController.Get(account.Id, account.Id));
+            Assert.Throws<DoesNotExistException<User>>(() => modelController.UserController.Get(user.Id, account.Id));
+            Assert.Throws<DoesNotExistException<Server>>(() => modelController.ServerController.Get(server.Id, user.Id));
+            Assert.Throws<DoesNotExistException<Channel>>(() => modelController.ChannelController.Get(channel.Id, user.Id));
         }
     }
 }

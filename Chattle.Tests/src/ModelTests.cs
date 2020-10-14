@@ -38,8 +38,6 @@ namespace Chattle.Tests
             Assert.NotEqual(Guid.Empty, testBot.Id);
             Assert.Equal(testNickname, testUser.Nickname);
             Assert.Equal(testNickname, testBot.Nickname);
-            Assert.EndsWith(testUser.Id.ToString(), testUser.Image.ToString());
-            Assert.EndsWith(testBot.Id.ToString(), testBot.Image.ToString());
             Assert.True(testUser.IsActive);
             Assert.True(testBot.IsActive);
             Assert.Equal(UserType.User, testUser.Type);
@@ -62,8 +60,6 @@ namespace Chattle.Tests
             Assert.Equal(testName, testServer2.Name);
             Assert.Equal(String.Empty, testServer2.Description);
             Assert.Equal(testDescription, testServer1.Description);
-            Assert.EndsWith(testServer1.Id.ToString(), testServer1.Image.ToString());
-            Assert.EndsWith(testServer2.Id.ToString(), testServer2.Image.ToString());
             Assert.Contains(testServer1.Roles, x => x.Id == Guid.Empty);
             Assert.Contains(testServer2.Roles, x => x.Id == Guid.Empty);
             Assert.NotEqual(new DateTime(), testServer1.CreationTime);
