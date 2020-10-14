@@ -8,7 +8,7 @@ namespace Chattle.Tests
     public class DatabaseTests
     {
         public const string ConnectionString = "mongodb+srv://testUser:testPassword@cluster-ktbsc.azure.mongodb.net";
-        public const string DatabaseName = "TestDatabase1";
+        public const string DatabaseName = "TestDatabase";
         public const string CollectionName = "MongoTest";
 
         [Fact]
@@ -30,8 +30,12 @@ namespace Chattle.Tests
             Assert.Equal(account, remoteAccount);
 
             account.Username = "testAccount2";
-            database.Update(CollectionName, account.Id, account);
+            database.Replace(CollectionName, account.Id, account);
             Assert.Equal(account, remoteAccount);
+
+            database.Update<Account>(CollectionName, account.Id, "Username", "acc");
+            remoteAccount = database.Read<Account>(CollectionName, a => a.Id == remoteAccount.Id, 1).First();
+            Assert.Equal("acc", remoteAccount.Username);
 
             database.Delete<Account>(CollectionName, account.Id);
             Assert.Equal(0, database.Count<Account>(CollectionName, x => x.Id == account.Id));
