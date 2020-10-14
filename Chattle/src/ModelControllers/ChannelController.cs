@@ -10,7 +10,7 @@ namespace Chattle
         private readonly UserController _userController;
         private readonly AccountController _accountController;
         private readonly ServerController _serverController;
-        private string CollectionName { get; set; }
+        public string CollectionName { get; private set; }
 
         public ChannelController(IDatabase database, string collectionName, UserController userController, AccountController accountController, ServerController serverController)
         {

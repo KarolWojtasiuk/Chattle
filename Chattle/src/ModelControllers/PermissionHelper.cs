@@ -311,9 +311,14 @@ namespace Chattle
         {
             //? 1. Active user with active account can create channels on own server;
             //? 2. Active user with active account and permission `ManageChannels` can create channels on server;
-            //? 3. Active user with active account and global permission `ManageServers` can create channels as other user;
+            //? 3. Active user with active account and global permission `ManageChannels` can create channels as other user;
 
-            if (!Exists<Server>(channel.ServerId, database, collectionName))
+            if (Exists<Channel>(channel.Id, database, collectionName))
+            {
+                throw new AlreadyExistsException<Channel>(channel.Id);
+            }
+
+            if (!Exists<Server>(channel.ServerId, database, serverController.CollectionName))
             {
                 throw new DoesNotExistException<Server>(channel.ServerId);
             }
@@ -322,8 +327,8 @@ namespace Chattle
             var caller = database.Read<User>(userController.CollectionName, u => u.Id == callerId, 1).FirstOrDefault();
 
             var firstCondition = channel.ServerId == server.Id && server.OwnerId == callerId;
-            var secondCondition = channel.ServerId == server.Id && channel.AuthorId == callerId && HasPermission(callerId, server.Roles, Permission.ManageServer);
-            var thirdCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageServers);
+            var secondCondition = channel.ServerId == server.Id && channel.AuthorId == callerId && HasPermission(callerId, server.Roles, Permission.ManageChannels);
+            var thirdCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageChannels);
 
             if (!(firstCondition || secondCondition || thirdCondition))
             {
@@ -344,11 +349,11 @@ namespace Chattle
         public static void GetChannel(Guid id, Guid callerId, IDatabase database, string collectionName, UserController userController, AccountController accountController, ServerController serverController)
         {
             //? 1. Active user with active account with assigned basic role can get channels;
-            //? 2. Active user with active account and global permission `ManageServers` can get channels;
+            //? 2. Active user with active account and global permission `ManageChannels` can get channels;
 
             if (!Exists<Channel>(id, database, collectionName))
             {
-                throw new DoesNotExistException<Server>(id);
+                throw new DoesNotExistException<Channel>(id);
             }
 
             var channel = database.Read<Channel>(collectionName, c => c.Id == id).FirstOrDefault();
@@ -356,7 +361,7 @@ namespace Chattle
             var caller = database.Read<User>(userController.CollectionName, u => u.Id == callerId, 1).FirstOrDefault();
 
             var firstCondition = server.Roles.FirstOrDefault(r => r.Id == Guid.Empty).Users.Contains(callerId);
-            var secondCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageServers);
+            var secondCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageChannels);
 
             if (!(firstCondition || secondCondition))
             {
@@ -378,7 +383,7 @@ namespace Chattle
         {
             //? 1. Active user with active account can modify or delete channels on own server;
             //? 2. Active user with active account and permission `ManageChannels` can modify or delete channels on server;
-            //? 3. Active user with active account and global permission `ManageServers` can modify or delete channels;
+            //? 3. Active user with active account and global permission `ManageChannels` can modify or delete channels;
 
             if (!Exists<Channel>(id, database, collectionName))
             {
@@ -390,8 +395,151 @@ namespace Chattle
             var caller = database.Read<User>(userController.CollectionName, u => u.Id == callerId, 1).FirstOrDefault();
 
             var firstCondition = channel.ServerId == server.Id && server.OwnerId == callerId;
-            var secondCondition = channel.ServerId == server.Id && channel.AuthorId == callerId && HasPermission(callerId, server.Roles, Permission.ManageServer);
-            var thirdCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageServers);
+            var secondCondition = channel.ServerId == server.Id && channel.AuthorId == callerId && HasPermission(callerId, server.Roles, Permission.ManageChannels);
+            var thirdCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageChannels);
+
+            if (!(firstCondition || secondCondition || thirdCondition))
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!UserIsActive(callerId, database, userController.CollectionName))
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!AccountIsActive(caller.AccountId, database, accountController.CollectionName))
+            {
+                throw new InsufficientPermissionsException<Account>(caller.AccountId);
+            }
+        }
+        #endregion
+
+        #region Message
+        public static void CreateMessage(Message message, Guid callerId, IDatabase database, string collectionName, UserController userController, AccountController accountController, ServerController serverController, ChannelController channelController)
+        {
+            //? 1. Active user with active account with permission `SendMessages` can create messages;
+            //? 2. Active user with active account and global permission `ManageMessages` can create messages;
+
+            if (Exists<Message>(message.Id, database, collectionName))
+            {
+                throw new AlreadyExistsException<Message>(message.Id);
+            }
+
+            if (!Exists<Channel>(message.ChannelId, database, channelController.CollectionName))
+            {
+                throw new DoesNotExistException<Channel>(message.ChannelId);
+            }
+
+            var channel = database.Read<Channel>(channelController.CollectionName, c => c.Id == message.ChannelId, 1).FirstOrDefault();
+            var server = database.Read<Server>(serverController.CollectionName, s => s.Id == channel.ServerId, 1).FirstOrDefault();
+            var caller = database.Read<User>(userController.CollectionName, u => u.Id == callerId, 1).FirstOrDefault();
+
+            var firstCondition = HasPermission(callerId, server.Roles, Permission.SendMessages);
+            var secondCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageMessages);
+
+            if (!(firstCondition || secondCondition))
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!UserIsActive(callerId, database, userController.CollectionName))
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!AccountIsActive(caller.AccountId, database, accountController.CollectionName))
+            {
+                throw new InsufficientPermissionsException<Account>(caller.AccountId);
+            }
+        }
+
+        public static void GetMessage(Guid id, Guid callerId, IDatabase database, string collectionName, UserController userController, AccountController accountController, ServerController serverController, ChannelController channelController)
+        {
+            //? 1. Active user with active account with permission `ReadMessages` can get messages;
+            //? 2. Active user with active account and global permission `ManageMessages` can get messages;
+
+            if (!Exists<Message>(id, database, collectionName))
+            {
+                throw new DoesNotExistException<Message>(id);
+            }
+
+
+            var message = database.Read<Message>(collectionName, m => m.Id == id, 1).FirstOrDefault();
+            var channel = database.Read<Channel>(channelController.CollectionName, c => c.Id == message.ChannelId, 1).FirstOrDefault();
+            var server = database.Read<Server>(serverController.CollectionName, s => s.Id == channel.ServerId, 1).FirstOrDefault();
+            var caller = database.Read<User>(userController.CollectionName, u => u.Id == callerId, 1).FirstOrDefault();
+
+            var firstCondition = HasPermission(callerId, server.Roles, Permission.ReadMessages);
+            var secondCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageServers);
+
+            if (!(firstCondition || secondCondition))
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!UserIsActive(callerId, database, userController.CollectionName))
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!AccountIsActive(caller.AccountId, database, accountController.CollectionName))
+            {
+                throw new InsufficientPermissionsException<Account>(caller.AccountId);
+            }
+        }
+
+        public static void ModifyMessage(Guid id, Guid callerId, IDatabase database, string collectionName, UserController userController, AccountController accountController, ServerController serverController, ChannelController channelController)
+        {
+            //? 1. Active user with active account with permission `SendMessages` can modify own messages;
+
+            if (!Exists<Message>(id, database, collectionName))
+            {
+                throw new DoesNotExistException<Message>(id);
+            }
+
+            var message = database.Read<Message>(collectionName, m => m.Id == id, 1).FirstOrDefault();
+            var channel = database.Read<Channel>(channelController.CollectionName, c => c.Id == message.ChannelId, 1).FirstOrDefault();
+            var server = database.Read<Server>(serverController.CollectionName, s => s.Id == channel.ServerId, 1).FirstOrDefault();
+            var caller = database.Read<User>(userController.CollectionName, u => u.Id == callerId, 1).FirstOrDefault();
+
+            var firstCondition = callerId == message.UserId && HasPermission(callerId, server.Roles, Permission.SendMessages);
+
+            if (!firstCondition)
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!UserIsActive(callerId, database, userController.CollectionName))
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!AccountIsActive(caller.AccountId, database, accountController.CollectionName))
+            {
+                throw new InsufficientPermissionsException<Account>(caller.AccountId);
+            }
+        }
+
+        public static void DeleteMessage(Guid id, Guid callerId, IDatabase database, string collectionName, UserController userController, AccountController accountController, ServerController serverController, ChannelController channelController)
+        {
+            //? 1. Active user with active account with permission `SendMessages` can delete own messages;
+            //? 2. Active user with active account and permission `DeleteMessages` can delete messages;
+            //? 3. Active user with active account and global permission `ManageMessages` can delete messages;
+
+            if (!Exists<Message>(id, database, channelController.CollectionName))
+            {
+                throw new DoesNotExistException<Message>(id);
+            }
+
+            var message = database.Read<Message>(collectionName, m => m.Id == id, 1).FirstOrDefault();
+            var channel = database.Read<Channel>(channelController.CollectionName, c => c.Id == message.ChannelId, 1).FirstOrDefault();
+            var server = database.Read<Server>(serverController.CollectionName, s => s.Id == channel.ServerId, 1).FirstOrDefault();
+            var caller = database.Read<User>(userController.CollectionName, u => u.Id == callerId, 1).FirstOrDefault();
+
+            var firstCondition = message.UserId == callerId && HasPermission(callerId, server.Roles, Permission.SendMessages);
+            var secondCondition = HasPermission(callerId, server.Roles, Permission.DeleteMessages);
+            var thirdCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageMessages);
 
             if (!(firstCondition || secondCondition || thirdCondition))
             {
