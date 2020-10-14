@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Chattle.Database;
 
 namespace Chattle
@@ -14,11 +12,11 @@ namespace Chattle
 
         public ModelController(IDatabase database)
         {
-            AccountController = new AccountController(database, "Accounts");
-            UserController = new UserController(database, "Users", AccountController);
-            ServerController = new ServerController(database, "Servers", UserController, AccountController);
-            ChannelController = new ChannelController(database, "Channels", UserController, AccountController, ServerController);
-            MessageController = new MessageController(database, "Messages");
+            AccountController = new AccountController(database, "Accounts", this);
+            UserController = new UserController(database, "Users", this);
+            ServerController = new ServerController(database, "Servers", this);
+            ChannelController = new ChannelController(database, "Channels", this);
+            MessageController = new MessageController(database, "Messages", this);
         }
 
     }

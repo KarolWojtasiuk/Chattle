@@ -15,13 +15,13 @@ namespace Chattle
 
         public string CollectionName { get; set; }
 
-        public MessageController(IDatabase database, string collectionName, AccountController accountController, UserController userController, ServerController serverController, ChannelController channelController)
+        public MessageController(IDatabase database, string collectionName, ModelController modelController)
         {
             _database = database;
-            _accountController = accountController;
-            _userController = userController;
-            _serverController = serverController;
-            _channelController = channelController;
+            _accountController = modelController.AccountController;
+            _userController = modelController.UserController;
+            _serverController = modelController.ServerController;
+            _channelController = modelController.ChannelController;
             CollectionName = collectionName;
         }
 

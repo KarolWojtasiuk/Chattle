@@ -12,12 +12,12 @@ namespace Chattle
         private readonly ServerController _serverController;
         public string CollectionName { get; private set; }
 
-        public ChannelController(IDatabase database, string collectionName, UserController userController, AccountController accountController, ServerController serverController)
+        public ChannelController(IDatabase database, string collectionName, ModelController modelController)
         {
             _database = database;
-            _userController = userController;
-            _accountController = accountController;
-            _serverController = serverController;
+            _userController = modelController.UserController;
+            _accountController = modelController.AccountController;
+            _serverController = modelController.ServerController;
             CollectionName = collectionName;
         }
 

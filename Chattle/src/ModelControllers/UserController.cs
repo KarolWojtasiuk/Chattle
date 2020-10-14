@@ -11,10 +11,10 @@ namespace Chattle
         private readonly AccountController _accountController;
         public string CollectionName { get; private set; }
 
-        public UserController(IDatabase database, string collectionName, AccountController accountController)
+        public UserController(IDatabase database, string collectionName, ModelController modelController)
         {
             _database = database;
-            _accountController = accountController;
+            _accountController = modelController.AccountController;
             CollectionName = collectionName;
         }
 
