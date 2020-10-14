@@ -106,6 +106,14 @@ namespace Chattle
             _database.Update<Server>(CollectionName, id, "Image", image);
         }
 
+        public void SetDefaultImage(Guid id, Guid callerId)
+        {
+            var image = DefaultImage.GetServerImage(id);
+            VerifyImage(image, id);
+            PermissionHelper.ModifyServer(id, callerId, _database, CollectionName, _userController, _accountController, this);
+            _database.Update<Server>(CollectionName, id, "Image", image);
+        }
+
         public void SetRoles(Guid id, List<Role> roles, Guid callerId)
         {
             VerifyRoles(roles, id);
