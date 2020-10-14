@@ -9,6 +9,7 @@ namespace Chattle
         public ServerController ServerController;
         public ChannelController ChannelController;
         public MessageController MessageController;
+        public ModelCleaner ModelCleaner;
 
         public ModelController(IDatabase database)
         {
@@ -17,7 +18,7 @@ namespace Chattle
             ServerController = new ServerController(database, "Servers", this);
             ChannelController = new ChannelController(database, "Channels", this);
             MessageController = new MessageController(database, "Messages", this);
+            ModelCleaner = new ModelCleaner(database, AccountController.CollectionName, UserController.CollectionName, ServerController.CollectionName, ChannelController.CollectionName, MessageController.CollectionName);
         }
-
     }
 }

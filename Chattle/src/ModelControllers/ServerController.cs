@@ -11,6 +11,7 @@ namespace Chattle
         private readonly IDatabase _database;
         private readonly UserController _userController;
         private readonly AccountController _accountController;
+        private readonly ModelCleaner _modelCleaner;
         public string CollectionName { get; private set; }
 
         public ServerController(IDatabase database, string collectionName, ModelController modelController)
@@ -18,6 +19,7 @@ namespace Chattle
             _database = database;
             _userController = modelController.UserController;
             _accountController = modelController.AccountController;
+            _modelCleaner = modelController.ModelCleaner;
             CollectionName = collectionName;
         }
 
@@ -81,6 +83,7 @@ namespace Chattle
         {
             PermissionHelper.DeleteServer(id, callerId, _database, CollectionName, _userController, _accountController, this);
             _database.Delete<Server>(CollectionName, id);
+            _modelCleaner.CleanFromServer(id);
         }
 
         public void SetName(Guid id, string name, Guid callerId)

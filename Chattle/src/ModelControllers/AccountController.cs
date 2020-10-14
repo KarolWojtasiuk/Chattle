@@ -7,13 +7,13 @@ namespace Chattle
     public class AccountController
     {
         private readonly IDatabase _database;
-        private readonly UserController _userController;
+        private readonly ModelCleaner _modelCleaner;
         public string CollectionName { get; set; }
 
         public AccountController(IDatabase database, string collectionName, ModelController modelController)
         {
             _database = database;
-            _userController = modelController.UserController;
+            _modelCleaner = modelController.ModelCleaner;
             CollectionName = collectionName;
         }
 
@@ -46,7 +46,7 @@ namespace Chattle
         {
             PermissionHelper.DeleteAccount(id, callerId, _database, CollectionName);
             _database.Delete<Account>(CollectionName, id);
-            _database.Delete<User>(_userController.CollectionName, u => u.AccountId == id);
+            _modelCleaner.CleanFromAccount(id);
         }
 
         public void SetActive(Guid id, bool isActive, Guid callerId)

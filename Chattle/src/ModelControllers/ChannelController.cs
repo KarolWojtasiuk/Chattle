@@ -10,6 +10,7 @@ namespace Chattle
         private readonly UserController _userController;
         private readonly AccountController _accountController;
         private readonly ServerController _serverController;
+        private readonly ModelCleaner _modelCleaner;
         public string CollectionName { get; private set; }
 
         public ChannelController(IDatabase database, string collectionName, ModelController modelController)
@@ -18,6 +19,7 @@ namespace Chattle
             _userController = modelController.UserController;
             _accountController = modelController.AccountController;
             _serverController = modelController.ServerController;
+            _modelCleaner = modelController.ModelCleaner;
             CollectionName = collectionName;
         }
 
@@ -50,6 +52,7 @@ namespace Chattle
         {
             PermissionHelper.ModifyOrDeleteChannel(id, callerId, _database, CollectionName, _userController, _accountController, _serverController);
             _database.Delete<Channel>(CollectionName, id);
+            _modelCleaner.CleanFromChannel(id);
         }
 
         public void SetName(Guid id, string name, Guid callerId)
