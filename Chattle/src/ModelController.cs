@@ -18,7 +18,7 @@ namespace Chattle
             ServerController = new ServerController(database, "Servers", this);
             ChannelController = new ChannelController(database, "Channels", this);
             MessageController = new MessageController(database, "Messages", this);
-            ModelCleaner = new ModelCleaner(database, AccountController.CollectionName, UserController.CollectionName, ServerController.CollectionName, ChannelController.CollectionName, MessageController.CollectionName);
+            ModelCleaner = new ModelCleaner(database, UserController.CollectionName, ServerController.CollectionName, ChannelController.CollectionName, MessageController.CollectionName);
         }
     }
 }

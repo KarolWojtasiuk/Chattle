@@ -6,17 +6,15 @@ namespace Chattle
 {
     public class ModelCleaner
     {
-        private IDatabase _database;
-        private string _accounts;
-        private string _users;
-        private string _servers;
-        private string _channels;
-        private string _messagees;
+        private readonly IDatabase _database;
+        private readonly string _users;
+        private readonly string _servers;
+        private readonly string _channels;
+        private readonly string _messagees;
 
-        public ModelCleaner(IDatabase database, string accountsCollection, string usersCollection, string serversCollection, string channelsConnection, string messagesCollection)
+        public ModelCleaner(IDatabase database, string usersCollection, string serversCollection, string channelsConnection, string messagesCollection)
         {
             _database = database;
-            _accounts = accountsCollection;
             _users = usersCollection;
             _servers = serversCollection;
             _channels = channelsConnection;
