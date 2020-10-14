@@ -28,8 +28,7 @@ namespace Chattle
         None = 0,
         ManageMessages = 1,
         ManageChannels = 2,
-        ManageUsers = 4,
-        ManageServers = 8,
-        Administrator = ManageMessages | ManageChannels | ManageUsers | ManageServers
+        ManageServers = 4,
+        Administrator = ManageMessages | ManageChannels | ManageServers
     }
 }
