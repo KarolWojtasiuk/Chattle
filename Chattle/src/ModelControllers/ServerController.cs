@@ -9,18 +9,18 @@ namespace Chattle
     public class ServerController
     {
         private readonly IDatabase _database;
-        private readonly UserController _userController;
-        private readonly AccountController _accountController;
+        private readonly string _collectionName;
         private readonly ModelCleaner _modelCleaner;
-        public string CollectionName { get; private set; }
+        private readonly string _accountsCollection;
+        private readonly string _usersCollection;
 
-        public ServerController(IDatabase database, string collectionName, ModelController modelController)
+        public ServerController(IDatabase database, string collectionName, ModelCleaner modelCleaner, string accountsCollection, string usersCollection)
         {
             _database = database;
-            _userController = modelController.UserController;
-            _accountController = modelController.AccountController;
-            _modelCleaner = modelController.ModelCleaner;
-            CollectionName = collectionName;
+            _collectionName = collectionName;
+            _modelCleaner = modelCleaner;
+            _accountsCollection = accountsCollection;
+            _usersCollection = usersCollection;
         }
 
         public void VerifyName(string name, Guid id)
@@ -69,56 +69,56 @@ namespace Chattle
             VerifyName(server.Name, server.Id);
             VerifyRoles(server.Roles, server.Id);
             VerifyImage(server.Image, server.Id);
-            PermissionHelper.CreateServer(server, callerId, _database, CollectionName, _userController, _accountController);
-            _database.Create(CollectionName, server);
+            PermissionHelper.CreateServer(server, callerId, _database, _collectionName, _usersCollection, _accountsCollection);
+            _database.Create(_collectionName, server);
         }
 
         public Server Get(Guid id, Guid callerId)
         {
-            PermissionHelper.GetServer(id, callerId, _database, CollectionName, _userController, _accountController);
-            return _database.Read<Server>(CollectionName, s => s.Id == id, 1).FirstOrDefault();
+            PermissionHelper.GetServer(id, callerId, _database, _collectionName, _usersCollection, _accountsCollection);
+            return _database.Read<Server>(_collectionName, s => s.Id == id, 1).FirstOrDefault();
         }
 
         public void Delete(Guid id, Guid callerId)
         {
-            PermissionHelper.DeleteServer(id, callerId, _database, CollectionName, _userController, _accountController, this);
-            _database.Delete<Server>(CollectionName, id);
+            PermissionHelper.DeleteServer(id, callerId, _database, _collectionName, _usersCollection, _accountsCollection, _collectionName);
+            _database.Delete<Server>(_collectionName, id);
             _modelCleaner.CleanFromServer(id);
         }
 
         public void SetName(Guid id, string name, Guid callerId)
         {
             VerifyName(name, id);
-            PermissionHelper.ModifyServer(id, callerId, _database, CollectionName, _userController, _accountController, this);
-            _database.Update<Server>(CollectionName, id, "Name", name);
+            PermissionHelper.ModifyServer(id, callerId, _database, _collectionName, _usersCollection, _accountsCollection, _collectionName);
+            _database.Update<Server>(_collectionName, id, "Name", name);
         }
 
         public void SetDescription(Guid id, string description, Guid callerId)
         {
-            PermissionHelper.ModifyServer(id, callerId, _database, CollectionName, _userController, _accountController, this);
-            _database.Update<Server>(CollectionName, id, "Description", description);
+            PermissionHelper.ModifyServer(id, callerId, _database, _collectionName, _usersCollection, _accountsCollection, _collectionName);
+            _database.Update<Server>(_collectionName, id, "Description", description);
         }
 
         public void SetImage(Guid id, Uri image, Guid callerId)
         {
             VerifyImage(image, id);
-            PermissionHelper.ModifyServer(id, callerId, _database, CollectionName, _userController, _accountController, this);
-            _database.Update<Server>(CollectionName, id, "Image", image);
+            PermissionHelper.ModifyServer(id, callerId, _database, _collectionName, _usersCollection, _accountsCollection, _collectionName);
+            _database.Update<Server>(_collectionName, id, "Image", image);
         }
 
         public void SetDefaultImage(Guid id, Guid callerId)
         {
             var image = DefaultImage.GetServerImage(id);
             VerifyImage(image, id);
-            PermissionHelper.ModifyServer(id, callerId, _database, CollectionName, _userController, _accountController, this);
-            _database.Update<Server>(CollectionName, id, "Image", image);
+            PermissionHelper.ModifyServer(id, callerId, _database, _collectionName, _usersCollection, _accountsCollection, _collectionName);
+            _database.Update<Server>(_collectionName, id, "Image", image);
         }
 
         public void SetRoles(Guid id, List<Role> roles, Guid callerId)
         {
             VerifyRoles(roles, id);
-            PermissionHelper.ModifyServer(id, callerId, _database, CollectionName, _userController, _accountController, this);
-            _database.Update<Server>(CollectionName, id, "Roles", roles);
+            PermissionHelper.ModifyServer(id, callerId, _database, _collectionName, _usersCollection, _accountsCollection, _collectionName);
+            _database.Update<Server>(_collectionName, id, "Roles", roles);
         }
     }
 }

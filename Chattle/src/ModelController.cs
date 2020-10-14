@@ -11,14 +11,14 @@ namespace Chattle
         public MessageController MessageController;
         public ModelCleaner ModelCleaner;
 
-        public ModelController(IDatabase database)
+        public ModelController(IDatabase database, string usersCollection = "Users", string accountsCollection = "Accounts", string serversCollection = "Servers", string channelsCollection = "Channels", string messagesCollection = "Messages")
         {
-            AccountController = new AccountController(database, "Accounts", this);
-            UserController = new UserController(database, "Users", this);
-            ServerController = new ServerController(database, "Servers", this);
-            ChannelController = new ChannelController(database, "Channels", this);
-            MessageController = new MessageController(database, "Messages", this);
-            ModelCleaner = new ModelCleaner(database, UserController.CollectionName, ServerController.CollectionName, ChannelController.CollectionName, MessageController.CollectionName);
+            ModelCleaner = new ModelCleaner(database, usersCollection, serversCollection, channelsCollection, messagesCollection);
+            AccountController = new AccountController(database, accountsCollection, ModelCleaner);
+            UserController = new UserController(database, usersCollection, ModelCleaner, accountsCollection);
+            ServerController = new ServerController(database, serversCollection, ModelCleaner, accountsCollection, usersCollection);
+            ChannelController = new ChannelController(database, channelsCollection, ModelCleaner, accountsCollection, usersCollection, serversCollection);
+            MessageController = new MessageController(database, messagesCollection, ModelCleaner, accountsCollection, usersCollection, serversCollection, channelsCollection);
         }
     }
 }

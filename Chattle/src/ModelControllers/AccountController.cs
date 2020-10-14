@@ -10,10 +10,10 @@ namespace Chattle
         private readonly ModelCleaner _modelCleaner;
         public string CollectionName { get; set; }
 
-        public AccountController(IDatabase database, string collectionName, ModelController modelController)
+        public AccountController(IDatabase database, string collectionName, ModelCleaner modelCleaner)
         {
             _database = database;
-            _modelCleaner = modelController.ModelCleaner;
+            _modelCleaner = modelCleaner;
             CollectionName = collectionName;
         }
 

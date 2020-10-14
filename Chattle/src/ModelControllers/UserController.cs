@@ -8,16 +8,16 @@ namespace Chattle
     public class UserController
     {
         private readonly IDatabase _database;
-        private readonly AccountController _accountController;
+        private readonly string _collectionName;
         private readonly ModelCleaner _modelCleaner;
-        public string CollectionName { get; private set; }
+        private readonly string _accountsCollection;
 
-        public UserController(IDatabase database, string collectionName, ModelController modelController)
+        public UserController(IDatabase database, string collectionName, ModelCleaner modelCleaner, string accountsCollection)
         {
             _database = database;
-            _accountController = modelController.AccountController;
-            _modelCleaner = modelController.ModelCleaner;
-            CollectionName = collectionName;
+            _collectionName = collectionName;
+            _modelCleaner = modelCleaner;
+            _accountsCollection = accountsCollection;
         }
 
         private void VerifyNickname(string nickname, Guid id)
@@ -44,55 +44,55 @@ namespace Chattle
         {
             VerifyNickname(user.Nickname, user.Id);
             VerifyImage(user.Image, user.Id);
-            PermissionHelper.CreateUser(user, callerId, _database, CollectionName, _accountController);
-            _database.Create(CollectionName, user);
+            PermissionHelper.CreateUser(user, callerId, _database, _collectionName, _accountsCollection);
+            _database.Create(_collectionName, user);
         }
 
         public User Get(Guid id, Guid callerId)
         {
-            PermissionHelper.GetUser(id, callerId, _database, CollectionName, _accountController);
-            return _database.Read<User>(CollectionName, u => u.Id == id, 1).First();
+            PermissionHelper.GetUser(id, callerId, _database, _collectionName, _accountsCollection);
+            return _database.Read<User>(_collectionName, u => u.Id == id, 1).First();
         }
 
         public void Delete(Guid id, Guid callerId)
         {
-            PermissionHelper.DeleteUser(id, callerId, _database, CollectionName, _accountController);
-            _database.Delete<User>(CollectionName, id);
+            PermissionHelper.DeleteUser(id, callerId, _database, _collectionName, _accountsCollection);
+            _database.Delete<User>(_collectionName, id);
             _modelCleaner.CleanFromUser(id);
         }
 
         public void SetActive(Guid id, bool active, Guid callerId)
         {
-            PermissionHelper.ManageUser(id, callerId, _database, CollectionName, _accountController);
-            _database.Update<User>(CollectionName, id, "IsActive", active);
+            PermissionHelper.ManageUser(id, callerId, _database, _collectionName, _accountsCollection);
+            _database.Update<User>(_collectionName, id, "IsActive", active);
         }
 
         public void SetGlobalPermissions(Guid id, UserGlobalPermission permissions, Guid callerId)
         {
-            PermissionHelper.ManageUser(id, callerId, _database, CollectionName, _accountController);
-            _database.Update<User>(CollectionName, id, "GlobalPermissions", permissions);
+            PermissionHelper.ManageUser(id, callerId, _database, _collectionName, _accountsCollection);
+            _database.Update<User>(_collectionName, id, "GlobalPermissions", permissions);
         }
 
         public void SetNickname(Guid id, string nickname, Guid callerId)
         {
             VerifyNickname(nickname, id);
-            PermissionHelper.ModifyUser(id, callerId, _database, CollectionName, _accountController);
-            _database.Update<User>(CollectionName, id, "Nickname", nickname);
+            PermissionHelper.ModifyUser(id, callerId, _database, _collectionName, _accountsCollection);
+            _database.Update<User>(_collectionName, id, "Nickname", nickname);
         }
 
         public void SetImage(Guid id, Uri image, Guid callerId)
         {
             VerifyImage(image, id);
-            PermissionHelper.ModifyUser(id, callerId, _database, CollectionName, _accountController);
-            _database.Update<User>(CollectionName, id, "Image", image);
+            PermissionHelper.ModifyUser(id, callerId, _database, _collectionName, _accountsCollection);
+            _database.Update<User>(_collectionName, id, "Image", image);
         }
 
         public void SetDefaultImage(Guid id, Guid callerId)
         {
             var image = DefaultImage.GetUserImage(id);
             VerifyImage(image, id);
-            PermissionHelper.ModifyUser(id, callerId, _database, CollectionName, _accountController);
-            _database.Update<User>(CollectionName, id, "Image", image);
+            PermissionHelper.ModifyUser(id, callerId, _database, _collectionName, _accountsCollection);
+            _database.Update<User>(_collectionName, id, "Image", image);
         }
     }
 }

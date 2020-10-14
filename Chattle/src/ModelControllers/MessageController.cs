@@ -8,51 +8,52 @@ namespace Chattle
     public class MessageController
     {
         private readonly IDatabase _database;
-        private readonly AccountController _accountController;
-        private readonly UserController _userController;
-        private readonly ServerController _serverController;
-        private readonly ChannelController _channelController;
+        private readonly string _collectionName;
+        private readonly ModelCleaner _modelCleaner;
+        private readonly string _accountsCollection;
+        private readonly string _usersCollection;
+        private readonly string _serversCollection;
+        private readonly string _channelsCollection;
 
-        public string CollectionName { get; set; }
-
-        public MessageController(IDatabase database, string collectionName, ModelController modelController)
+        public MessageController(IDatabase database, string collectionName, ModelCleaner modelCleaner, string accountsCollection, string usersCollection, string serversCollection, string channelsCollection)
         {
             _database = database;
-            _accountController = modelController.AccountController;
-            _userController = modelController.UserController;
-            _serverController = modelController.ServerController;
-            _channelController = modelController.ChannelController;
-            CollectionName = collectionName;
+            _collectionName = collectionName;
+            _modelCleaner = modelCleaner;
+            _accountsCollection = accountsCollection;
+            _usersCollection = usersCollection;
+            _serversCollection = serversCollection;
+            _channelsCollection = channelsCollection;
         }
 
         public void Create(Message message, Guid callerId)
         {
-            PermissionHelper.CreateMessage(message, callerId, _database, CollectionName, _userController, _accountController, _serverController, _channelController);
-            _database.Create(CollectionName, message);
+            PermissionHelper.CreateMessage(message, callerId, _database, _collectionName, _usersCollection, _accountsCollection, _serversCollection, _channelsCollection);
+            _database.Create(_collectionName, message);
         }
 
         public Message Get(Guid id, Guid callerId)
         {
-            PermissionHelper.GetMessage(id, callerId, _database, CollectionName, _userController, _accountController, _serverController, _channelController);
-            return _database.Read<Message>(CollectionName, m => m.Id == id, 1).FirstOrDefault();
+            PermissionHelper.GetMessage(id, callerId, _database, _collectionName, _usersCollection, _accountsCollection, _serversCollection, _channelsCollection);
+            return _database.Read<Message>(_collectionName, m => m.Id == id, 1).FirstOrDefault();
         }
 
         public List<Message> Get(Guid channelId, int count, Guid callerId)
         {
-            PermissionHelper.GetMessages(channelId, callerId, _database, CollectionName, _userController, _accountController, _serverController, _channelController);
-            return _database.Read<Message>(CollectionName, m => m.ChannelId == channelId, count).ToList();
+            PermissionHelper.GetMessages(channelId, callerId, _database, _collectionName, _usersCollection, _accountsCollection, _serversCollection, _channelsCollection);
+            return _database.Read<Message>(_collectionName, m => m.ChannelId == channelId, count).ToList();
         }
 
         public void Delete(Guid id, Guid callerId)
         {
-            PermissionHelper.DeleteMessage(id, callerId, _database, CollectionName, _userController, _accountController, _serverController, _channelController);
-            _database.Delete<Message>(CollectionName, id);
+            PermissionHelper.DeleteMessage(id, callerId, _database, _collectionName, _usersCollection, _accountsCollection, _serversCollection, _channelsCollection);
+            _database.Delete<Message>(_collectionName, id);
         }
 
         public void SetContent(Guid id, string content, Guid callerId)
         {
-            PermissionHelper.ModifyMessage(id, callerId, _database, CollectionName, _userController, _accountController, _serverController, _channelController);
-            _database.Update<Message>(CollectionName, id, "Content", content);
+            PermissionHelper.ModifyMessage(id, callerId, _database, _collectionName, _usersCollection, _accountsCollection, _serversCollection, _channelsCollection);
+            _database.Update<Message>(_collectionName, id, "Content", content);
         }
     }
 }
