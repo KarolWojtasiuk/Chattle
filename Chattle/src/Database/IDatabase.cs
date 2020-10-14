@@ -17,5 +17,7 @@ namespace Chattle.Database
         public void Replace<T>(string collectionName, Guid id, T newItem) where T : IIdentifiable;
 
         public void Delete<T>(string collectionName, Guid id) where T : IIdentifiable;
+
+        public void Delete<T>(string collectionName, Expression<Func<T, bool>> expression) where T : IIdentifiable;
     }
 }

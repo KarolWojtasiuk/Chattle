@@ -57,5 +57,10 @@ namespace Chattle.Database
         {
             database.GetCollection<T>(collectionName).DeleteOne(i => i.Id == id);
         }
+
+        public void Delete<T>(string collectionName, Expression<Func<T, bool>> expression) where T : IIdentifiable
+        {
+            database.GetCollection<T>(collectionName).DeleteMany(expression);
+        }
     }
 }
