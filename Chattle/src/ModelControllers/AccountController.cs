@@ -15,6 +15,17 @@ namespace Chattle
             _database = database;
             _modelCleaner = modelCleaner;
             CollectionName = collectionName;
+
+            var count = _database.Count<Account>(collectionName, _ => true);
+            if (count == 0)
+            {
+                var rootAccount = new Account("ROOT");
+                rootAccount.ChangePassword("Chattle");
+                rootAccount.GlobalPermissions = AccountGlobalPermission.Administrator;
+                rootAccount.IsActive = true;
+
+                _database.Create(collectionName, rootAccount);
+            }
         }
 
         private void VerifyUsername(string username, Guid id)
