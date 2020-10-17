@@ -2,7 +2,7 @@ using Chattle.Database;
 
 namespace Chattle
 {
-    public class ModelController
+    public class Chattle
     {
         public AccountController AccountController;
         public UserController UserController;
@@ -11,7 +11,7 @@ namespace Chattle
         public MessageController MessageController;
         public ModelCleaner ModelCleaner;
 
-        public ModelController(IDatabase database, string usersCollection = "Users", string accountsCollection = "Accounts", string serversCollection = "Servers", string channelsCollection = "Channels", string messagesCollection = "Messages")
+        public Chattle(IDatabase database, string usersCollection = "Users", string accountsCollection = "Accounts", string serversCollection = "Servers", string channelsCollection = "Channels", string messagesCollection = "Messages")
         {
             ModelCleaner = new ModelCleaner(database, usersCollection, serversCollection, channelsCollection, messagesCollection);
             AccountController = new AccountController(database, accountsCollection, ModelCleaner);
