@@ -17,8 +17,6 @@ namespace Chattle.Database
 
         public MongoDatabase(string connectionString, string databaseName)
         {
-            BsonSerializer.RegisterSerializer(typeof(Guid), new GuidSerializer(BsonType.String));
-
             client = new MongoClient(connectionString);
             database = client.GetDatabase(databaseName);
         }
