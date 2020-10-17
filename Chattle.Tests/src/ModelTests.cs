@@ -60,8 +60,8 @@ namespace Chattle.Tests
             Assert.Equal(testName, testServer2.Name);
             Assert.Equal(String.Empty, testServer2.Description);
             Assert.Equal(testDescription, testServer1.Description);
-            Assert.Contains(testServer1.Roles, x => x.Id == Guid.Empty);
-            Assert.Contains(testServer2.Roles, x => x.Id == Guid.Empty);
+            Assert.Contains(testServer1.Roles, x => x.Id == Chattle.SpecialId);
+            Assert.Contains(testServer2.Roles, x => x.Id == Chattle.SpecialId);
             Assert.NotEqual(new DateTime(), testServer1.CreationTime);
             Assert.NotEqual(new DateTime(), testServer2.CreationTime);
         }

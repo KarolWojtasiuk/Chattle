@@ -39,7 +39,7 @@ namespace Chattle
             //? 2. Active account with global permission `ManageAccounts` can delete other accounts;
             //! Root account cannot be deleted;
 
-            if (id == Guid.Empty)
+            if (id == Chattle.SpecialId)
             {
                 throw new InsufficientPermissionsException<Account>(callerId);
             }
@@ -82,7 +82,7 @@ namespace Chattle
             //? Active account with global permission `ManageAccounts` can delete account;
             //! Root account cannot be managed;
 
-            if (id == Guid.Empty)
+            if (id == Chattle.SpecialId)
             {
                 throw new InsufficientPermissionsException<Account>(callerId);
             }
@@ -382,7 +382,7 @@ namespace Chattle
             var server = database.Read<Server>(serversCollection, s => s.Id == channel.ServerId, 1).FirstOrDefault();
             var caller = database.Read<User>(usersCollection, u => u.Id == callerId, 1).FirstOrDefault();
 
-            var firstCondition = server.Roles.FirstOrDefault(r => r.Id == Guid.Empty).Users.Contains(callerId);
+            var firstCondition = server.Roles.FirstOrDefault(r => r.Id == Chattle.SpecialId).Users.Contains(callerId);
             var secondCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageChannels);
             var thirdCondition = callerId == server.OwnerId;
 

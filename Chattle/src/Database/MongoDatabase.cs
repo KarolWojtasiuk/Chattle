@@ -10,17 +10,6 @@ using MongoDB.Bson.Serialization.Serializers;
 
 namespace Chattle.Database
 {
-    //? A few of Chattle objects must have empty Id;
-    public class CustomGuidGenerator : IIdGenerator
-    {
-        public object GenerateId(object container, object document)
-        {
-            return Guid.NewGuid();
-        }
-
-        public bool IsEmpty(object id) => false;
-    }
-
     public class MongoDatabase : IDatabase
     {
         private readonly IMongoClient client;
@@ -28,7 +17,6 @@ namespace Chattle.Database
 
         public MongoDatabase(string connectionString, string databaseName)
         {
-            BsonSerializer.RegisterIdGenerator(typeof(Guid), new CustomGuidGenerator());
             BsonSerializer.RegisterSerializer(typeof(Guid), new GuidSerializer(BsonType.String));
 
             client = new MongoClient(connectionString);

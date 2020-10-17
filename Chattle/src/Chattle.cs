@@ -1,9 +1,12 @@
+using System;
 using Chattle.Database;
 
 namespace Chattle
 {
     public class Chattle
     {
+        public static Guid SpecialId = new Guid(new String('F', 32));
+
         public AccountController AccountController;
         public UserController UserController;
         public ServerController ServerController;

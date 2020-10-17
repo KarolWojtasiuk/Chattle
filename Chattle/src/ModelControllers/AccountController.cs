@@ -21,7 +21,7 @@ namespace Chattle
             {
                 var rootAccount = new Account("ROOT")
                 {
-                    Id = Guid.Empty,
+                    Id = Chattle.SpecialId,
                     IsActive = true,
                     GlobalPermissions = AccountGlobalPermission.Administrator
                 };
