@@ -7,14 +7,12 @@ namespace Chattle.SignalR
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
-        }
+            var host = Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(b =>
+            {
+                b.UseStartup<Startup>();
+            });
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+            host.Build().Run();
+        }
     }
 }
