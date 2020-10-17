@@ -37,6 +37,12 @@ namespace Chattle
         {
             //? 1. Account can delete own account;
             //? 2. Active account with global permission `ManageAccounts` can delete other accounts;
+            //! Root account cannot be deleted;
+
+            if (id == Guid.Empty)
+            {
+                throw new InsufficientPermissionsException<Account>(callerId);
+            }
 
             if (!Exists<Account>(id, database, collectionName))
             {
@@ -74,6 +80,12 @@ namespace Chattle
         public static void ManageAccount(Guid id, Guid callerId, IDatabase database, string collectionName)
         {
             //? Active account with global permission `ManageAccounts` can delete account;
+            //! Root account cannot be managed;
+
+            if (id == Guid.Empty)
+            {
+                throw new InsufficientPermissionsException<Account>(callerId);
+            }
 
             if (!Exists<Account>(id, database, collectionName))
             {
@@ -92,7 +104,7 @@ namespace Chattle
         {
             //? 1. Active account can create user for own account;
             //? 2. Active account with global permission `ManageAccounts` can create users for other accounts;
-            //? Limited to one `UserType.User` per account;
+            //! Limited to one `UserType.User` per account;
 
             if (Exists<User>(user.Id, database, collectionName))
             {

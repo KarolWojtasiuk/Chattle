@@ -7,7 +7,7 @@ namespace Chattle
 {
     public class Account : IIdentifiable, IEquatable<Account>
     {
-        public Guid Id { get; private set; }
+        public Guid Id { get; internal set; }
         public string Username { get; internal set; }
         public bool IsActive { get; internal set; }
         public AccountGlobalPermission GlobalPermissions { get; internal set; }

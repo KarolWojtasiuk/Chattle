@@ -19,10 +19,13 @@ namespace Chattle
             var count = _database.Count<Account>(collectionName, _ => true);
             if (count == 0)
             {
-                var rootAccount = new Account("ROOT");
+                var rootAccount = new Account("ROOT")
+                {
+                    Id = Guid.Empty,
+                    IsActive = true,
+                    GlobalPermissions = AccountGlobalPermission.Administrator
+                };
                 rootAccount.ChangePassword("Chattle");
-                rootAccount.GlobalPermissions = AccountGlobalPermission.Administrator;
-                rootAccount.IsActive = true;
 
                 _database.Create(collectionName, rootAccount);
             }
