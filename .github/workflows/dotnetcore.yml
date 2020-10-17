@@ -15,8 +15,10 @@ jobs:
         with:
           dotnet-version: 3.1.401
       - name: Restore
-        run: dotnet restore Chattle
+        run: dotnet restore Chattle && dotnet restore Chattle.WebSocket
       - name: Build
         run: dotnet build Chattle --configuration Release --no-restore
+      - name: Build WebSocket
+        run: dotnet build Chattle.WebSocket --configuration Release --no-restore
       - name: Test
         run: dotnet test Chattle.Tests
