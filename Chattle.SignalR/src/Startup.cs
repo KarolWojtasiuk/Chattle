@@ -42,7 +42,8 @@ namespace Chattle.SignalR
             services.AddSignalR();
             services.AddCors(o => o.AddDefaultPolicy(p =>
             {
-                p.WithOrigins("http://localhost:5500").AllowAnyHeader().AllowAnyMethod().AllowCredentials().Build();
+                var origins = _configuration.GetSection("CorsAllowedOrigins").Get<string[]>();
+                p.WithOrigins(origins).AllowAnyHeader().AllowAnyMethod().AllowCredentials().Build();
             }));
         }
 

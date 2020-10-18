@@ -4,9 +4,6 @@ using System.Linq.Expressions;
 using System.Collections.Generic;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
 
 namespace Chattle.Database
 {
