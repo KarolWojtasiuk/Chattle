@@ -63,7 +63,7 @@ namespace Chattle.SignalR
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Authentication, "true")
+                new Claim(ClaimTypes.NameIdentifier, account.Id.ToString())
             };
 
             var identity = new ClaimsIdentity(claims);

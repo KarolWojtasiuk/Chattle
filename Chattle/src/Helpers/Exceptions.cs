@@ -2,9 +2,13 @@ using System;
 
 namespace Chattle
 {
-    public class ModelVerificationException<T> : Exception where T : IIdentifiable
+    public class ChattleException : Exception
     {
-        public ModelVerificationException(Guid id, string message) : base($"{typeof(T)}({id}) --> {message}") { }
+        public ChattleException(string message) : base(message) { }
+    }
+    public class ModelVerificationException<T> : ChattleException where T : IIdentifiable
+    {
+        public ModelVerificationException(Guid id, string message) : base($"{typeof(T).Name}({id}) --> {message}") { }
     }
 
     public class InsufficientPermissionsException<T> : ModelVerificationException<T> where T : IIdentifiable

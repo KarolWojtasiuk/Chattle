@@ -56,7 +56,10 @@ namespace Chattle.SignalR
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHub<ChattleHub>("/chattle");
+            });
         }
     }
 }
