@@ -69,10 +69,10 @@ namespace Chattle
             _database.Update<Account>(CollectionName, id, "IsActive", isActive);
         }
 
-        public void SetGlobalPermissions(Guid id, AccountGlobalPermission permissions, Guid callerId)
+        public void SetGlobalPermission(Guid id, AccountGlobalPermission permission, Guid callerId)
         {
             PermissionHelper.ManageAccount(id, callerId, _database, CollectionName);
-            _database.Update<Account>(CollectionName, id, "GlobalPermissions", permissions);
+            _database.Update<Account>(CollectionName, id, "GlobalPermissions", permission);
         }
 
         public void SetUsername(Guid id, string username, Guid callerId)
