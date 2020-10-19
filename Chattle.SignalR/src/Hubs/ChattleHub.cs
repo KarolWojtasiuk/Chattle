@@ -127,5 +127,118 @@ namespace Chattle.SignalR
                 return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(SetAccountPassword), Message = e.Message });
             }
         }
+
+        [Authorize]
+        public Task CreateUser(string nickname, UserType userType)
+        {
+            try
+            {
+                var user = new User(nickname, Context.User.GetId(), userType);
+                _chattle.UserController.Create(user, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(CreateUser), new CreateResult { Id = user.Id });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(CreateUser), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task GetUser(Guid id)
+        {
+            try
+            {
+                var user = _chattle.UserController.Get(id, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(GetUser), new GetResult<User> { Object = user });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(GetUser), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task DeleteUser(Guid id)
+        {
+            try
+            {
+                _chattle.UserController.Delete(id, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(DeleteUser), new DeleteResult { Id = id });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(DeleteUser), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task SetUserIsActive(Guid id, bool isActive)
+        {
+            try
+            {
+                _chattle.UserController.SetIsActive(id, isActive, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(SetUserIsActive), new ManageResult<bool> { Id = id, NewValue = isActive });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(SetUserIsActive), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task SetUserGlobalPermission(Guid id, UserGlobalPermission permission)
+        {
+            try
+            {
+                _chattle.UserController.SetGlobalPermission(id, permission, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(SetUserGlobalPermission), new ManageResult<UserGlobalPermission> { Id = id, NewValue = permission });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(SetUserGlobalPermission), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task SetUserNickname(Guid id, string nickname)
+        {
+            try
+            {
+                _chattle.UserController.SetNickname(id, nickname, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(SetUserNickname), new ModifyResult<string> { Id = id, NewValue = nickname });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(SetUserNickname), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task SetUserImage(Guid id, Uri image)
+        {
+            try
+            {
+                _chattle.UserController.SetImage(id, image, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(SetUserImage), new ModifyResult<Uri> { Id = id, NewValue = image });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(SetUserImage), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task SetUserDefaultImage(Guid id)
+        {
+            try
+            {
+                _chattle.UserController.SetDefaultImage(id, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(SetUserDefaultImage), new ModifyResult<Uri> { Id = id, NewValue = DefaultImage.GetUserImage(id) });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(SetUserDefaultImage), Message = e.Message });
+            }
+        }
     }
 }
