@@ -623,12 +623,12 @@ namespace Chattle
 
         private static bool HasGlobalPermission(Guid id, AccountGlobalPermission permission, IDatabase database, string collectionName)
         {
-            return database.Count<Account>(collectionName, a => a.Id == id && a.IsActive && a.GlobalPermissions.HasFlag(permission)) == 1;
+            return database.Count<Account>(collectionName, a => a.Id == id && a.IsActive && a.GlobalPermission.HasFlag(permission)) == 1;
         }
 
         private static bool HasGlobalPermission(User user, UserGlobalPermission permission)
         {
-            return user.GlobalPermissions.HasFlag(permission);
+            return user.GlobalPermission.HasFlag(permission);
         }
 
         public static bool HasPermission(Guid userId, List<Role> roles, Permission permission)

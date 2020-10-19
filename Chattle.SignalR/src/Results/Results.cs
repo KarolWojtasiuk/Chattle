@@ -7,9 +7,9 @@ namespace Chattle.SignalR
         public Guid Id { get; set; }
     }
 
-    public struct GetResult
+    public struct GetResult<T>
     {
-        public Account Account { get; set; }
+        public T Object { get; set; }
     }
 
     public struct DeleteResult

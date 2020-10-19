@@ -23,7 +23,7 @@ namespace Chattle
                 {
                     Id = Chattle.SpecialId,
                     IsActive = true,
-                    GlobalPermissions = AccountGlobalPermission.Administrator
+                    GlobalPermission = AccountGlobalPermission.Administrator
                 };
                 rootAccount.ChangePassword("Chattle");
 
@@ -63,7 +63,7 @@ namespace Chattle
             _modelCleaner.CleanFromAccount(id);
         }
 
-        public void SetActive(Guid id, bool isActive, Guid callerId)
+        public void SetIsActive(Guid id, bool isActive, Guid callerId)
         {
             PermissionHelper.ManageAccount(id, callerId, _database, CollectionName);
             _database.Update<Account>(CollectionName, id, "IsActive", isActive);
@@ -72,7 +72,7 @@ namespace Chattle
         public void SetGlobalPermission(Guid id, AccountGlobalPermission permission, Guid callerId)
         {
             PermissionHelper.ManageAccount(id, callerId, _database, CollectionName);
-            _database.Update<Account>(CollectionName, id, "GlobalPermissions", permission);
+            _database.Update<Account>(CollectionName, id, "GlobalPermission", permission);
         }
 
         public void SetUsername(Guid id, string username, Guid callerId)
