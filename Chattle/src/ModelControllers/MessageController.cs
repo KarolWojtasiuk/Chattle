@@ -38,7 +38,7 @@ namespace Chattle
 
         public List<Message> Get(Guid channelId, int count, Guid callerId)
         {
-            PermissionHelper.GetMessages(channelId, callerId, _database, _collectionName, _usersCollection, _accountsCollection, _serversCollection, _channelsCollection);
+            PermissionHelper.GetMessages(channelId, callerId, _database, _usersCollection, _accountsCollection, _serversCollection, _channelsCollection);
             return _database.Read<Message>(_collectionName, m => m.ChannelId == channelId, count).ToList();
         }
 

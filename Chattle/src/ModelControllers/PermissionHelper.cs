@@ -515,7 +515,7 @@ namespace Chattle
             }
         }
 
-        public static void GetMessages(Guid channelId, Guid callerId, IDatabase database, string collectionName, string usersCollection, string accountsCollection, string serversCollection, string channelsCollection)
+        public static void GetMessages(Guid channelId, Guid callerId, IDatabase database, string usersCollection, string accountsCollection, string serversCollection, string channelsCollection)
         {
             //? 1. Active user with active account with permission `ReadMessages` can get messages;
             //? 2. Active user with active account and global permission `ManageMessages` can get messages;

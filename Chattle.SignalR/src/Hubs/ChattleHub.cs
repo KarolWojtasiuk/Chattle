@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
@@ -14,6 +15,7 @@ namespace Chattle.SignalR
             _chattle = chattle;
         }
 
+        #region Account
         [AllowAnonymous]
         public Task CreateAccount(string username, string password)
         {
@@ -127,7 +129,9 @@ namespace Chattle.SignalR
                 return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(SetAccountPassword), Message = e.Message });
             }
         }
+        #endregion
 
+        #region User
         [Authorize]
         public Task CreateUser(string nickname, UserType userType)
         {
@@ -240,5 +244,143 @@ namespace Chattle.SignalR
                 return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(SetUserDefaultImage), Message = e.Message });
             }
         }
+        #endregion
+
+        #region Server
+        [Authorize]
+        public Task CreateServer(string name, string description, string image)
+        {
+            try
+            {
+                Server server = null;
+                if (String.IsNullOrWhiteSpace(description) && String.IsNullOrWhiteSpace(image))
+                {
+                    server = new Server(name, Context.User.GetId());
+                }
+                else if (String.IsNullOrWhiteSpace(image))
+                {
+                    server = new Server(name, Context.User.GetId(), description);
+                }
+                else
+                {
+                    server = new Server(name, Context.User.GetId(), description, new Uri(image));
+                }
+
+                _chattle.ServerController.Create(server, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(CreateServer), new CreateResult { Id = server.Id });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(CreateServer), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task GetServer(Guid id)
+        {
+            try
+            {
+                var server = _chattle.ServerController.Get(id, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(GetServer), new GetResult<Server> { Object = server });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(GetServer), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task DeleteServer(Guid id)
+        {
+            try
+            {
+                _chattle.ServerController.Delete(id, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(DeleteServer), new DeleteResult { Id = id });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(DeleteServer), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task SetServerName(Guid id, string name)
+        {
+            try
+            {
+                _chattle.ServerController.SetName(id, name, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(SetServerName), new ModifyResult<string> { Id = id, NewValue = name });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(SetServerName), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task SetServerDescription(Guid id, string description)
+        {
+            try
+            {
+                _chattle.ServerController.SetDescription(id, description, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(SetServerDescription), new ModifyResult<string> { Id = id, NewValue = description });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(SetServerDescription), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task SetServerImage(Guid id, string image)
+        {
+            try
+            {
+                var imageUri = new Uri(image);
+                _chattle.ServerController.SetImage(id, imageUri, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(SetServerImage), new ModifyResult<Uri> { Id = id, NewValue = imageUri });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(SetServerImage), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task SetServerDefaultImage(Guid id)
+        {
+            try
+            {
+                _chattle.ServerController.SetDefaultImage(id, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(SetServerDefaultImage), new ModifyResult<Uri> { Id = id, NewValue = DefaultImage.GetServerImage(id) });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(SetServerDefaultImage), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task SetServerRoles(Guid id, List<Role> roles)
+        {
+            try
+            {
+                _chattle.ServerController.SetRoles(id, roles, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(SetServerRoles), new ModifyResult<List<Role>> { Id = id, NewValue = roles });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(SetServerRoles), Message = e.Message });
+            }
+        }
+        #endregion
+
+        #region Channel
+
+        #endregion
+
+        #region Message
+
+        #endregion
     }
 }
