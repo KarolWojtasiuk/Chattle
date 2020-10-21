@@ -376,7 +376,85 @@ namespace Chattle.SignalR
         #endregion
 
         #region Channel
+        [Authorize]
+        public Task CreateChannel(string name, Guid serverId, Guid authorId, string description)
+        {
+            try
+            {
+                Channel channel;
+                if (String.IsNullOrWhiteSpace(description))
+                {
+                    channel = new Channel(name, serverId, authorId);
+                }
+                else
+                {
+                    channel = new Channel(name, serverId, authorId, description);
+                }
 
+                _chattle.ChannelController.Create(channel, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(CreateChannel), new CreateResult { Id = channel.Id });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(CreateChannel), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task GetChannel(Guid id)
+        {
+            try
+            {
+                var channel = _chattle.ChannelController.Get(id, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(GetChannel), new GetResult<Channel> { Object = channel });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(GetChannel), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task DeleteChannel(Guid id)
+        {
+            try
+            {
+                _chattle.ChannelController.Delete(id, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(DeleteChannel), new DeleteResult { Id = id });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(DeleteChannel), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task SetChannelName(Guid id, string name)
+        {
+            try
+            {
+                _chattle.ChannelController.SetName(id, name, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(SetChannelName), new ModifyResult<string> { Id = id, NewValue = name });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(SetChannelName), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task SetChannelDescription(Guid id, string description)
+        {
+            try
+            {
+                _chattle.ChannelController.SetDescription(id, description, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(SetChannelDescription), new ModifyResult<string> { Id = id, NewValue = description });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(SetChannelDescription), Message = e.Message });
+            }
+        }
         #endregion
 
         #region Message
