@@ -458,7 +458,63 @@ namespace Chattle.SignalR
         #endregion
 
         #region Message
+        [Authorize]
+        public Task CreateMessage(string content, Guid channelId)
+        {
+            try
+            {
+                var message = new Message(content, channelId, Context.User.GetId());
 
+                _chattle.MessageController.Create(message, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(CreateMessage), new CreateResult { Id = message.Id });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(CreateMessage), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task GetMessage(Guid id)
+        {
+            try
+            {
+                var message = _chattle.MessageController.Get(id, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(GetMessage), new GetResult<Message> { Object = message });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(GetMessage), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task DeleteMessage(Guid id)
+        {
+            try
+            {
+                _chattle.MessageController.Delete(id, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(DeleteMessage), new DeleteResult { Id = id });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(DeleteMessage), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task SetMessageContent(Guid id, string content)
+        {
+            try
+            {
+                _chattle.MessageController.SetContent(id, content, Context.User.GetId());
+                return Clients.Caller.SendAsync(nameof(SetMessageContent), new ModifyResult<string> { Id = id, NewValue = content });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(SetMessageContent), Message = e.Message });
+            }
+        }
         #endregion
     }
 }
