@@ -40,11 +40,22 @@ namespace Chattle.SignalR
             });
 
             services.AddSignalR();
-            services.AddCors(o => o.AddDefaultPolicy(p =>
+
+            if (_configuration["CorsAllowedOrigins"] == "*")
             {
-                var origins = _configuration.GetSection("CorsAllowedOrigins").Get<string[]>();
-                p.WithOrigins(origins).AllowAnyHeader().AllowAnyMethod().AllowCredentials().Build();
-            }));
+                services.AddCors(o => o.AddDefaultPolicy(p =>
+                {
+                    p.AllowAnyHeader().AllowAnyMethod().AllowCredentials().SetIsOriginAllowed(_ => true);
+                }));
+            }
+            else
+            {
+                services.AddCors(o => o.AddDefaultPolicy(p =>
+                {
+                    var origins = _configuration.GetSection("CorsAllowedOrigins").Get<string[]>();
+                    p.WithOrigins(origins).AllowAnyHeader().AllowAnyMethod().AllowCredentials().Build();
+                }));
+            }
         }
 
         public void Configure(IApplicationBuilder app)
