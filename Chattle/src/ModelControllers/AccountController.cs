@@ -15,6 +15,20 @@ namespace Chattle
             _database = database;
             _modelCleaner = modelCleaner;
             CollectionName = collectionName;
+
+            var count = _database.Count<Account>(collectionName, _ => true);
+            if (count == 0)
+            {
+                var rootAccount = new Account("ROOT")
+                {
+                    Id = Chattle.SpecialId,
+                    IsActive = true,
+                    GlobalPermission = AccountGlobalPermission.Administrator
+                };
+                rootAccount.ChangePassword("Chattle");
+
+                _database.Create(collectionName, rootAccount);
+            }
         }
 
         private void VerifyUsername(string username, Guid id)
@@ -49,16 +63,16 @@ namespace Chattle
             _modelCleaner.CleanFromAccount(id);
         }
 
-        public void SetActive(Guid id, bool isActive, Guid callerId)
+        public void SetIsActive(Guid id, bool isActive, Guid callerId)
         {
             PermissionHelper.ManageAccount(id, callerId, _database, CollectionName);
             _database.Update<Account>(CollectionName, id, "IsActive", isActive);
         }
 
-        public void SetGlobalPermissions(Guid id, AccountGlobalPermission permissions, Guid callerId)
+        public void SetGlobalPermission(Guid id, AccountGlobalPermission permission, Guid callerId)
         {
             PermissionHelper.ManageAccount(id, callerId, _database, CollectionName);
-            _database.Update<Account>(CollectionName, id, "GlobalPermissions", permissions);
+            _database.Update<Account>(CollectionName, id, "GlobalPermission", permission);
         }
 
         public void SetUsername(Guid id, string username, Guid callerId)

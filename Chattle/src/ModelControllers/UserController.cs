@@ -61,16 +61,16 @@ namespace Chattle
             _modelCleaner.CleanFromUser(id);
         }
 
-        public void SetActive(Guid id, bool active, Guid callerId)
+        public void SetIsActive(Guid id, bool active, Guid callerId)
         {
             PermissionHelper.ManageUser(id, callerId, _database, _collectionName, _accountsCollection);
             _database.Update<User>(_collectionName, id, "IsActive", active);
         }
 
-        public void SetGlobalPermissions(Guid id, UserGlobalPermission permissions, Guid callerId)
+        public void SetGlobalPermission(Guid id, UserGlobalPermission permission, Guid callerId)
         {
             PermissionHelper.ManageUser(id, callerId, _database, _collectionName, _accountsCollection);
-            _database.Update<User>(_collectionName, id, "GlobalPermissions", permissions);
+            _database.Update<User>(_collectionName, id, "GlobalPermission", permission);
         }
 
         public void SetNickname(Guid id, string nickname, Guid callerId)

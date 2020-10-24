@@ -37,6 +37,12 @@ namespace Chattle
         {
             //? 1. Account can delete own account;
             //? 2. Active account with global permission `ManageAccounts` can delete other accounts;
+            //! Root account cannot be deleted;
+
+            if (id == Chattle.SpecialId)
+            {
+                throw new InsufficientPermissionsException<Account>(callerId);
+            }
 
             if (!Exists<Account>(id, database, collectionName))
             {
@@ -74,6 +80,12 @@ namespace Chattle
         public static void ManageAccount(Guid id, Guid callerId, IDatabase database, string collectionName)
         {
             //? Active account with global permission `ManageAccounts` can delete account;
+            //! Root account cannot be managed;
+
+            if (id == Chattle.SpecialId)
+            {
+                throw new InsufficientPermissionsException<Account>(callerId);
+            }
 
             if (!Exists<Account>(id, database, collectionName))
             {
@@ -92,7 +104,7 @@ namespace Chattle
         {
             //? 1. Active account can create user for own account;
             //? 2. Active account with global permission `ManageAccounts` can create users for other accounts;
-            //? Limited to one `UserType.User` per account;
+            //! Limited to one `UserType.User` per account;
 
             if (Exists<User>(user.Id, database, collectionName))
             {
@@ -370,7 +382,7 @@ namespace Chattle
             var server = database.Read<Server>(serversCollection, s => s.Id == channel.ServerId, 1).FirstOrDefault();
             var caller = database.Read<User>(usersCollection, u => u.Id == callerId, 1).FirstOrDefault();
 
-            var firstCondition = server.Roles.FirstOrDefault(r => r.Id == Guid.Empty).Users.Contains(callerId);
+            var firstCondition = server.Roles.FirstOrDefault(r => r.Id == Chattle.SpecialId).Users.Contains(callerId);
             var secondCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageChannels);
             var thirdCondition = callerId == server.OwnerId;
 
@@ -503,7 +515,7 @@ namespace Chattle
             }
         }
 
-        public static void GetMessages(Guid channelId, Guid callerId, IDatabase database, string collectionName, string usersCollection, string accountsCollection, string serversCollection, string channelsCollection)
+        public static void GetMessages(Guid channelId, Guid callerId, IDatabase database, string usersCollection, string accountsCollection, string serversCollection, string channelsCollection)
         {
             //? 1. Active user with active account with permission `ReadMessages` can get messages;
             //? 2. Active user with active account and global permission `ManageMessages` can get messages;
@@ -611,12 +623,12 @@ namespace Chattle
 
         private static bool HasGlobalPermission(Guid id, AccountGlobalPermission permission, IDatabase database, string collectionName)
         {
-            return database.Count<Account>(collectionName, a => a.Id == id && a.IsActive && a.GlobalPermissions.HasFlag(permission)) == 1;
+            return database.Count<Account>(collectionName, a => a.Id == id && a.IsActive && a.GlobalPermission.HasFlag(permission)) == 1;
         }
 
         private static bool HasGlobalPermission(User user, UserGlobalPermission permission)
         {
-            return user.GlobalPermissions.HasFlag(permission);
+            return user.GlobalPermission.HasFlag(permission);
         }
 
         public static bool HasPermission(Guid userId, List<Role> roles, Permission permission)

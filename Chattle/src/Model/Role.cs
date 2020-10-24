@@ -37,7 +37,7 @@ namespace Chattle
         {
             return new Role("Users", Permission.None)
             {
-                Id = Guid.Empty,
+                Id = Chattle.SpecialId,
                 Name = "Users",
                 Color = "#000000",
                 Permission = Permission.None,

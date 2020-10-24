@@ -13,7 +13,7 @@ namespace Chattle.Tests
         [Fact]
         public void AccountTest()
         {
-            var modelController = new ModelController(Database);
+            var modelController = new Chattle(Database);
 
             var account = new Account("testAccount");
             modelController.AccountController.Create(account);
@@ -40,7 +40,7 @@ namespace Chattle.Tests
             var user1 = new User("testUser", account.Id, UserType.User);
             var user2 = new User("testUser2", account.Id, UserType.User);
 
-            var modelController = new ModelController(Database);
+            var modelController = new Chattle(Database);
 
             Assert.Throws<InsufficientPermissionsException<Account>>(() => modelController.UserController.Create(user1, account.Id));
             modelController.AccountController.Create(account);
@@ -59,7 +59,7 @@ namespace Chattle.Tests
         [Fact]
         public void ServerTest()
         {
-            var modelController = new ModelController(Database);
+            var modelController = new Chattle(Database);
 
             var account = new Account("testAccount");
             var user = new User("testUser", account.Id, UserType.User);
@@ -90,7 +90,7 @@ namespace Chattle.Tests
         [Fact]
         public void ChannelTest()
         {
-            var modelController = new ModelController(Database);
+            var modelController = new Chattle(Database);
 
             var account = new Account("testAccount");
             var user = new User("testUser", account.Id, UserType.User);
@@ -122,7 +122,7 @@ namespace Chattle.Tests
         [Fact]
         public void MessageTest()
         {
-            var modelController = new ModelController(Database);
+            var modelController = new Chattle(Database);
 
             var account = new Account("testAccount");
             var user = new User("testUser", account.Id, UserType.User);

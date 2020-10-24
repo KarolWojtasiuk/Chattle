@@ -45,7 +45,7 @@ namespace Chattle
 
         public void VerifyRoles(List<Role> roles, Guid id)
         {
-            var defaultRole = roles.FirstOrDefault(r => r.Id == Guid.Empty);
+            var defaultRole = roles.FirstOrDefault(r => r.Id == Chattle.SpecialId);
 
             if (defaultRole == null)
             {
