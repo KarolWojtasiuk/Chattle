@@ -8,7 +8,7 @@
     <Title>Chattle</Title>
     <Authors>KarolWojtasiuk</Authors>
     <Company>KarolWojtasiuk</Company>
-    <Description>Real-time chat server based on MongoDB and SignalR.</Description>
+    <Description>Real-time chat server based on MongoDB and SignalR with support of permissions.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/KarolWojtasiuk/Chattle</RepositoryUrl>
     <PackageTags>chat;websocket;signalr;dotnet;mongodb;real-time;csharp</PackageTags>
