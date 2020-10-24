@@ -37,7 +37,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                var account = _chattle.AccountController.Get(id, Context.User.GetId());
+                var account = _chattle.AccountController.Get(id, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(GetAccount), new GetResult<Account> { Object = account });
             }
             catch (Exception e)
@@ -51,7 +51,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                var account = _chattle.AccountController.Get(Context.User.GetId(), Context.User.GetId());
+                var account = _chattle.AccountController.Get(Context.User.GetAccountId(), Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(GetMyAccount), new GetResult<Account> { Object = account });
             }
             catch (Exception e)
@@ -65,7 +65,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.AccountController.Delete(id, Context.User.GetId());
+                _chattle.AccountController.Delete(id, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(DeleteAccount), new DeleteResult { Id = id });
             }
             catch (Exception e)
@@ -79,7 +79,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.AccountController.SetIsActive(id, isActive, Context.User.GetId());
+                _chattle.AccountController.SetIsActive(id, isActive, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(SetAccountIsActive), new ManageResult<bool> { Id = id, NewValue = isActive });
             }
             catch (Exception e)
@@ -93,7 +93,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.AccountController.SetGlobalPermission(id, permission, Context.User.GetId());
+                _chattle.AccountController.SetGlobalPermission(id, permission, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(SetAccountGlobalPermission), new ManageResult<AccountGlobalPermission> { Id = id, NewValue = permission });
             }
             catch (Exception e)
@@ -107,7 +107,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.AccountController.SetUsername(id, username, Context.User.GetId());
+                _chattle.AccountController.SetUsername(id, username, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(SetAccountUsername), new ModifyResult<string> { Id = id, NewValue = username });
             }
             catch (Exception e)
@@ -121,7 +121,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.AccountController.SetPassword(id, password, Context.User.GetId());
+                _chattle.AccountController.SetPassword(id, password, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(SetAccountPassword), new ModifyResult<string> { Id = id, NewValue = "N/A" });
             }
             catch (Exception e)
@@ -137,8 +137,8 @@ namespace Chattle.SignalR
         {
             try
             {
-                var user = new User(nickname, Context.User.GetId(), userType);
-                _chattle.UserController.Create(user, Context.User.GetId());
+                var user = new User(nickname, Context.User.GetAccountId(), userType);
+                _chattle.UserController.Create(user, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(CreateUser), new CreateResult { Id = user.Id });
             }
             catch (Exception e)
@@ -152,7 +152,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                var user = _chattle.UserController.Get(id, Context.User.GetId());
+                var user = _chattle.UserController.Get(id, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(GetUser), new GetResult<User> { Object = user });
             }
             catch (Exception e)
@@ -166,7 +166,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.UserController.Delete(id, Context.User.GetId());
+                _chattle.UserController.Delete(id, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(DeleteUser), new DeleteResult { Id = id });
             }
             catch (Exception e)
@@ -180,7 +180,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.UserController.SetIsActive(id, isActive, Context.User.GetId());
+                _chattle.UserController.SetIsActive(id, isActive, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(SetUserIsActive), new ManageResult<bool> { Id = id, NewValue = isActive });
             }
             catch (Exception e)
@@ -194,7 +194,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.UserController.SetGlobalPermission(id, permission, Context.User.GetId());
+                _chattle.UserController.SetGlobalPermission(id, permission, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(SetUserGlobalPermission), new ManageResult<UserGlobalPermission> { Id = id, NewValue = permission });
             }
             catch (Exception e)
@@ -208,7 +208,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.UserController.SetNickname(id, nickname, Context.User.GetId());
+                _chattle.UserController.SetNickname(id, nickname, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(SetUserNickname), new ModifyResult<string> { Id = id, NewValue = nickname });
             }
             catch (Exception e)
@@ -222,7 +222,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.UserController.SetImage(id, image, Context.User.GetId());
+                _chattle.UserController.SetImage(id, image, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(SetUserImage), new ModifyResult<Uri> { Id = id, NewValue = image });
             }
             catch (Exception e)
@@ -236,7 +236,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.UserController.SetDefaultImage(id, Context.User.GetId());
+                _chattle.UserController.SetDefaultImage(id, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(SetUserDefaultImage), new ModifyResult<Uri> { Id = id, NewValue = DefaultImage.GetUserImage(id) });
             }
             catch (Exception e)
@@ -255,18 +255,18 @@ namespace Chattle.SignalR
                 Server server = null;
                 if (String.IsNullOrWhiteSpace(description) && String.IsNullOrWhiteSpace(image))
                 {
-                    server = new Server(name, Context.User.GetId());
+                    server = new Server(name, Context.User.GetAccountId());
                 }
                 else if (String.IsNullOrWhiteSpace(image))
                 {
-                    server = new Server(name, Context.User.GetId(), description);
+                    server = new Server(name, Context.User.GetAccountId(), description);
                 }
                 else
                 {
-                    server = new Server(name, Context.User.GetId(), description, new Uri(image));
+                    server = new Server(name, Context.User.GetAccountId(), description, new Uri(image));
                 }
 
-                _chattle.ServerController.Create(server, Context.User.GetId());
+                _chattle.ServerController.Create(server, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(CreateServer), new CreateResult { Id = server.Id });
             }
             catch (Exception e)
@@ -280,7 +280,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                var server = _chattle.ServerController.Get(id, Context.User.GetId());
+                var server = _chattle.ServerController.Get(id, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(GetServer), new GetResult<Server> { Object = server });
             }
             catch (Exception e)
@@ -294,7 +294,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.ServerController.Delete(id, Context.User.GetId());
+                _chattle.ServerController.Delete(id, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(DeleteServer), new DeleteResult { Id = id });
             }
             catch (Exception e)
@@ -308,7 +308,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.ServerController.SetName(id, name, Context.User.GetId());
+                _chattle.ServerController.SetName(id, name, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(SetServerName), new ModifyResult<string> { Id = id, NewValue = name });
             }
             catch (Exception e)
@@ -322,7 +322,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.ServerController.SetDescription(id, description, Context.User.GetId());
+                _chattle.ServerController.SetDescription(id, description, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(SetServerDescription), new ModifyResult<string> { Id = id, NewValue = description });
             }
             catch (Exception e)
@@ -337,7 +337,7 @@ namespace Chattle.SignalR
             try
             {
                 var imageUri = new Uri(image);
-                _chattle.ServerController.SetImage(id, imageUri, Context.User.GetId());
+                _chattle.ServerController.SetImage(id, imageUri, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(SetServerImage), new ModifyResult<Uri> { Id = id, NewValue = imageUri });
             }
             catch (Exception e)
@@ -351,7 +351,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.ServerController.SetDefaultImage(id, Context.User.GetId());
+                _chattle.ServerController.SetDefaultImage(id, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(SetServerDefaultImage), new ModifyResult<Uri> { Id = id, NewValue = DefaultImage.GetServerImage(id) });
             }
             catch (Exception e)
@@ -365,7 +365,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.ServerController.SetRoles(id, roles, Context.User.GetId());
+                _chattle.ServerController.SetRoles(id, roles, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(SetServerRoles), new ModifyResult<List<Role>> { Id = id, NewValue = roles });
             }
             catch (Exception e)
@@ -391,7 +391,7 @@ namespace Chattle.SignalR
                     channel = new Channel(name, serverId, authorId, description);
                 }
 
-                _chattle.ChannelController.Create(channel, Context.User.GetId());
+                _chattle.ChannelController.Create(channel, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(CreateChannel), new CreateResult { Id = channel.Id });
             }
             catch (Exception e)
@@ -405,7 +405,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                var channel = _chattle.ChannelController.Get(id, Context.User.GetId());
+                var channel = _chattle.ChannelController.Get(id, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(GetChannel), new GetResult<Channel> { Object = channel });
             }
             catch (Exception e)
@@ -419,7 +419,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.ChannelController.Delete(id, Context.User.GetId());
+                _chattle.ChannelController.Delete(id, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(DeleteChannel), new DeleteResult { Id = id });
             }
             catch (Exception e)
@@ -433,7 +433,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.ChannelController.SetName(id, name, Context.User.GetId());
+                _chattle.ChannelController.SetName(id, name, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(SetChannelName), new ModifyResult<string> { Id = id, NewValue = name });
             }
             catch (Exception e)
@@ -447,7 +447,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.ChannelController.SetDescription(id, description, Context.User.GetId());
+                _chattle.ChannelController.SetDescription(id, description, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(SetChannelDescription), new ModifyResult<string> { Id = id, NewValue = description });
             }
             catch (Exception e)
@@ -463,9 +463,9 @@ namespace Chattle.SignalR
         {
             try
             {
-                var message = new Message(content, channelId, Context.User.GetId());
+                var message = new Message(content, channelId, Context.User.GetAccountId());
 
-                _chattle.MessageController.Create(message, Context.User.GetId());
+                _chattle.MessageController.Create(message, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(CreateMessage), new CreateResult { Id = message.Id });
             }
             catch (Exception e)
@@ -479,7 +479,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                var message = _chattle.MessageController.Get(id, Context.User.GetId());
+                var message = _chattle.MessageController.Get(id, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(GetMessage), new GetResult<Message> { Object = message });
             }
             catch (Exception e)
@@ -493,7 +493,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.MessageController.Delete(id, Context.User.GetId());
+                _chattle.MessageController.Delete(id, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(DeleteMessage), new DeleteResult { Id = id });
             }
             catch (Exception e)
@@ -507,7 +507,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.MessageController.SetContent(id, content, Context.User.GetId());
+                _chattle.MessageController.SetContent(id, content, Context.User.GetAccountId());
                 return Clients.Caller.SendAsync(nameof(SetMessageContent), new ModifyResult<string> { Id = id, NewValue = content });
             }
             catch (Exception e)
