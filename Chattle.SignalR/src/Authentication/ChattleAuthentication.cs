@@ -61,11 +61,34 @@ namespace Chattle.SignalR
                 return AuthenticateResult.Fail("Invalid Authorization Header");
             }
 
+            var userId = Guid.Empty;
+
+            if (!String.IsNullOrWhiteSpace(Request.Headers["UserId"][0]))
+            {
+                try
+                {
+                    var userHeader = Request.Headers["UserId"][0];
+                    var userBytes = Convert.FromBase64String(userHeader);
+                    var userIdString = Encoding.UTF8.GetString(userBytes);
+                    userId = new Guid(userIdString);
+                }
+                catch
+                {
+                    return AuthenticateResult.Fail("Invalid UserId Header");
+                }
+            }
+
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Authentication, "true"),
                 new Claim(ClaimTypes.NameIdentifier, account.Id.ToString())
             };
+
+            if (userId != Guid.Empty)
+            {
+                claims.Add(new Claim(ClaimTypes.UserData, userId.ToString()));
+            }
 
             var identity = new ClaimsIdentity(claims);
             var principal = new ClaimsPrincipal(identity);

@@ -53,6 +53,7 @@ namespace Chattle.SignalR
             app.UseRouting();
 
             app.UseQueryAuthentication();
+            app.UseUserAuthentication();
             app.UseAuthentication();
             app.UseAuthorization();
 
