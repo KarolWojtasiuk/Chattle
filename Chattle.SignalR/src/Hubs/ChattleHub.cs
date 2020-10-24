@@ -507,7 +507,7 @@ namespace Chattle.SignalR
         {
             try
             {
-                _chattle.MessageController.SetContent(id, content, Context.User.GetUseId());
+                _chattle.MessageController.SetContent(id, content, Context.User.GetUserId());
                 return Clients.Caller.SendAsync(nameof(SetMessageContent), new ModifyResult<string> { Id = id, NewValue = content });
             }
             catch (Exception e)
