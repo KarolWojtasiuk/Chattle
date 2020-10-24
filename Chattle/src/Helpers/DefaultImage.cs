@@ -4,20 +4,17 @@ namespace Chattle
 {
     public static class DefaultImage
     {
-        //! Find working API;
-        // private static readonly Uri baseUserImageUri = new Uri("https://api.adorable.io/avatars/512/User_");
-        // private static readonly Uri baseServerImageUri = new Uri("https://api.adorable.io/avatars/512/Server_");
+        private static readonly string baseUserImageUri = "https://avatars.dicebear.com/api/gridy/{userId}.svg?w=512&h=512&m=5&colorful=1&deterministic=1";
+        private static readonly string baseServerImageUri = "https://avatars.dicebear.com/api/gridy/{serverId}.svg?w=512&h=512&m=5&colorful=1&deterministic=1";
 
         public static Uri GetUserImage(Guid userId)
         {
-            // return new Uri(baseUserImageUri, userId.ToString());
-            return new Uri("http://placehold.jp/500x500.jpg");
+            return new Uri(baseUserImageUri.Replace("{userId}", userId.ToString()));
         }
 
         public static Uri GetServerImage(Guid serverId)
         {
-            return new Uri("http://placehold.jp/500x500.jpg");
-            // return new Uri(baseServerImageUri, serverId.ToString());
+            return new Uri(baseServerImageUri.Replace("{serverId}", serverId.ToString()));
         }
     }
 }
