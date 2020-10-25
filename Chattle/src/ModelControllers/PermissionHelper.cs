@@ -143,6 +143,16 @@ namespace Chattle
             }
         }
 
+        public static void GetUser(Guid callerId, IDatabase database, string accountsCollection)
+        {
+            //? Active account can get users;
+
+            if (!AccountIsActive(callerId, database, accountsCollection))
+            {
+                throw new InsufficientPermissionsException<Account>(callerId);
+            }
+        }
+
         public static void DeleteUser(Guid id, Guid callerId, IDatabase database, string collectionName, string accountsCollection)
         {
             //? 1. Active account can delete own users;
@@ -246,6 +256,23 @@ namespace Chattle
             {
                 throw new DoesNotExistException<Server>(id);
             }
+
+            var caller = database.Read<User>(usersCollection, u => u.Id == callerId, 1).FirstOrDefault();
+
+            if (!caller.IsActive)
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!AccountIsActive(caller.AccountId, database, accountsCollection))
+            {
+                throw new InsufficientPermissionsException<Account>(caller.AccountId);
+            }
+        }
+
+        public static void GetServer(Guid callerId, IDatabase database, string usersCollection, string accountsCollection)
+        {
+            //? Active user with active account can get servers;
 
             var caller = database.Read<User>(usersCollection, u => u.Id == callerId, 1).FirstOrDefault();
 
@@ -402,6 +429,35 @@ namespace Chattle
             }
         }
 
+        public static void GetChannel(Guid serverId, Guid callerId, IDatabase database, string usersCollection, string accountsCollection, string serversCollection)
+        {
+            //? 1. Active user with active account with assigned basic role can get channels;
+            //? 2. Active user with active account and global permission `ManageChannels` can get channels;
+            //? 3. Active user with active account can get channels on own servers;
+
+            var server = database.Read<Server>(serversCollection, s => s.Id == serverId, 1).FirstOrDefault();
+            var caller = database.Read<User>(usersCollection, u => u.Id == callerId, 1).FirstOrDefault();
+
+            var firstCondition = server.Roles.FirstOrDefault(r => r.Id == Chattle.SpecialId).Users.Contains(callerId);
+            var secondCondition = HasGlobalPermission(caller, UserGlobalPermission.ManageChannels);
+            var thirdCondition = callerId == server.OwnerId;
+
+            if (!(firstCondition || secondCondition || thirdCondition))
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!UserIsActive(callerId, database, usersCollection))
+            {
+                throw new InsufficientPermissionsException<User>(callerId);
+            }
+
+            if (!AccountIsActive(caller.AccountId, database, accountsCollection))
+            {
+                throw new InsufficientPermissionsException<Account>(caller.AccountId);
+            }
+        }
+
         public static void ModifyOrDeleteChannel(Guid id, Guid callerId, IDatabase database, string collectionName, string usersCollection, string accountsCollection, string serversCollection)
         {
             //? 1. Active user with active account can modify or delete channels on own server;
@@ -515,7 +571,7 @@ namespace Chattle
             }
         }
 
-        public static void GetMessages(Guid channelId, Guid callerId, IDatabase database, string usersCollection, string accountsCollection, string serversCollection, string channelsCollection)
+        public static void GetMessage(Guid channelId, Guid callerId, IDatabase database, string usersCollection, string accountsCollection, string serversCollection, string channelsCollection)
         {
             //? 1. Active user with active account with permission `ReadMessages` can get messages;
             //? 2. Active user with active account and global permission `ManageMessages` can get messages;

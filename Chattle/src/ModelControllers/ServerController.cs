@@ -79,6 +79,12 @@ namespace Chattle
             return _database.Read<Server>(_collectionName, s => s.Id == id, 1).FirstOrDefault();
         }
 
+        public List<Server> GetMany(Guid callerId)
+        {
+            PermissionHelper.GetServer(callerId, _database, _usersCollection, _accountsCollection);
+            return _database.Read<Server>(_collectionName, s => s.Roles.First(r => r.Id == Chattle.SpecialId).Users.Contains(callerId));
+        }
+
         public void Delete(Guid id, Guid callerId)
         {
             PermissionHelper.DeleteServer(id, callerId, _database, _collectionName, _usersCollection, _accountsCollection);
