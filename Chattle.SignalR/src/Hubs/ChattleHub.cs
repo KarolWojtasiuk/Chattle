@@ -433,11 +433,17 @@ namespace Chattle.SignalR
         }
 
         [Authorize]
-        public Task GetChannel(Guid id)
+        public Task GetChannel(Guid id, bool joinGroup = false)
         {
             try
             {
                 var channel = _chattle.ChannelController.Get(id, Context.User.GetUserId());
+
+                if (joinGroup)
+                {
+                    ChangeChannelGroup(id, channel.ServerId);
+                }
+
                 return Clients.Caller.SendAsync(nameof(GetChannel), new GetResult<Channel> { Object = channel });
             }
             catch (Exception e)
@@ -513,6 +519,7 @@ namespace Chattle.SignalR
                 var message = new Message(content, channelId, Context.User.GetUserId());
 
                 _chattle.MessageController.Create(message, Context.User.GetUserId());
+                Clients.Group($"Channel({channelId})").SendAsync("NewMessage", new GetResult<Message> { Object = message });
                 return Clients.Caller.SendAsync(nameof(CreateMessage), new CreateResult { Id = message.Id });
             }
             catch (Exception e)
@@ -577,5 +584,14 @@ namespace Chattle.SignalR
             }
         }
         #endregion
+
+        private void ChangeChannelGroup(Guid id, Guid serverId)
+        {
+            foreach (var channelId in _chattle.ChannelController.GetMany(serverId, Context.User.GetUserId()))
+            {
+                Groups.RemoveFromGroupAsync(Context.ConnectionId, $"Channel({channelId})");
+            }
+            Groups.AddToGroupAsync(Context.ConnectionId, $"Channel({id})");
+        }
     }
 }
