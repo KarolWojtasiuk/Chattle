@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Chattle.SignalR
 {
@@ -10,6 +11,11 @@ namespace Chattle.SignalR
     public struct GetResult<T>
     {
         public T Object { get; set; }
+    }
+
+    public struct GetManyResult<T>
+    {
+        public List<T> Objects { get; set; }
     }
 
     public struct DeleteResult

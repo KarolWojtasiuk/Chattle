@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
@@ -162,6 +163,20 @@ namespace Chattle.SignalR
         }
 
         [Authorize]
+        public Task GetUsers()
+        {
+            try
+            {
+                var users = _chattle.UserController.GetMany(Context.User.GetAccountId(), Context.User.GetAccountId());
+                return Clients.Caller.SendAsync(nameof(GetUsers), new GetManyResult<User> { Objects = users });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(GetUsers), Message = e.Message });
+            }
+        }
+
+        [Authorize]
         public Task DeleteUser(Guid id)
         {
             try
@@ -287,6 +302,22 @@ namespace Chattle.SignalR
             {
                 return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(GetServer), Message = e.Message });
             }
+
+        }
+
+        [Authorize]
+        public Task GetServers()
+        {
+            try
+            {
+                var servers = _chattle.ServerController.GetMany(Context.User.GetUserId());
+                return Clients.Caller.SendAsync(nameof(GetServers), new GetManyResult<Server> { Objects = servers });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(GetServers), Message = e.Message });
+            }
+
         }
 
         [Authorize]
@@ -392,6 +423,7 @@ namespace Chattle.SignalR
                 }
 
                 _chattle.ChannelController.Create(channel, Context.User.GetUserId());
+
                 return Clients.Caller.SendAsync(nameof(CreateChannel), new CreateResult { Id = channel.Id });
             }
             catch (Exception e)
@@ -411,6 +443,21 @@ namespace Chattle.SignalR
             catch (Exception e)
             {
                 return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(GetChannel), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task GetChannels(Guid id)
+        {
+            try
+            {
+                var channels = _chattle.ChannelController.GetMany(id, Context.User.GetUserId());
+
+                return Clients.Caller.SendAsync(nameof(GetChannels), new GetManyResult<Channel> { Objects = channels });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(GetChannels), Message = e.Message });
             }
         }
 
@@ -485,6 +532,20 @@ namespace Chattle.SignalR
             catch (Exception e)
             {
                 return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(GetMessage), Message = e.Message });
+            }
+        }
+
+        [Authorize]
+        public Task GetMessages(Guid id, int count, DateTime beforeUtc = default)
+        {
+            try
+            {
+                var messages = _chattle.MessageController.GetMany(id, count, Context.User.GetUserId(), beforeUtc);
+                return Clients.Caller.SendAsync(nameof(GetMessages), new GetManyResult<Message> { Objects = messages });
+            }
+            catch (Exception e)
+            {
+                return Clients.Caller.SendAsync("Error", new ErrorResult { Method = nameof(GetMessages), Message = e.Message });
             }
         }
 
