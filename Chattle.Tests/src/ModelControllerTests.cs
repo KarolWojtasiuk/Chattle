@@ -137,7 +137,7 @@ namespace Chattle.Tests
             modelController.ChannelController.Create(channel, user.Id);
             modelController.MessageController.Create(message, user.Id);
 
-            Assert.Equal(message, modelController.MessageController.Get(channel.Id, 1, user.Id).FirstOrDefault());
+            Assert.Equal(message, modelController.MessageController.GetMany(channel.Id, 1, user.Id).FirstOrDefault());
 
             modelController.MessageController.Delete(message.Id, user.Id);
             Assert.Throws<DoesNotExistException<Message>>(() => modelController.MessageController.Get(message.Id, user.Id));

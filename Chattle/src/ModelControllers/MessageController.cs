@@ -36,8 +36,13 @@ namespace Chattle
             return _database.Read<Message>(_collectionName, m => m.Id == id, 1).FirstOrDefault();
         }
 
-        public List<Message> GetMany(Guid channelId, int count, Guid callerId, DateTime beforeUtc)
+        public List<Message> GetMany(Guid channelId, int count, Guid callerId, DateTime beforeUtc = new DateTime())
         {
+            if (beforeUtc == new DateTime())
+            {
+                beforeUtc = DateTime.UtcNow;
+            }
+
             PermissionHelper.GetMessage(channelId, callerId, _database, _usersCollection, _accountsCollection, _serversCollection, _channelsCollection);
             return _database.Read<Message>(_collectionName, m => m.ChannelId == channelId && m.CreationTime < beforeUtc, count).ToList();
         }
