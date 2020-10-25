@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Chattle.Database;
 
@@ -46,6 +47,12 @@ namespace Chattle
         {
             PermissionHelper.GetChannel(id, callerId, _database, _collectionName, _usersCollection, _accountsCollection, _serversCollection);
             return _database.Read<Channel>(_collectionName, c => c.Id == id, 1).FirstOrDefault();
+        }
+
+        public List<Channel> GetMany(Guid serverId, Guid callerId)
+        {
+            PermissionHelper.GetChannel(serverId, callerId, _database, _collectionName, _usersCollection, _accountsCollection, _serversCollection);
+            return _database.Read<Channel>(_collectionName, c => c.ServerId == serverId, 1);
         }
 
         public void Delete(Guid id, Guid callerId)

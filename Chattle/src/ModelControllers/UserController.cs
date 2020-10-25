@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Linq;
+using System.Collections.Generic;
 using Chattle.Database;
 
 namespace Chattle
@@ -52,6 +53,12 @@ namespace Chattle
         {
             PermissionHelper.GetUser(id, callerId, _database, _collectionName, _accountsCollection);
             return _database.Read<User>(_collectionName, u => u.Id == id, 1).First();
+        }
+
+        public List<User> GetMany(Guid accountId, Guid callerId)
+        {
+            PermissionHelper.GetUser(callerId, _database, _accountsCollection);
+            return _database.Read<User>(_collectionName, u => u.AccountId == accountId, 1).ToList();
         }
 
         public void Delete(Guid id, Guid callerId)
