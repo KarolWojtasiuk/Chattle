@@ -22,5 +22,9 @@ jobs:
         run: dotnet restore Chattle.SignalR
       - name: Build SignalR
         run: dotnet build Chattle.SignalR --configuration Release --no-restore
+      - name: Restore WebClient
+        run: dotnet restore Chattle.WebClient
+      - name: Build WebClient
+        run: dotnet build Chattle.WebClient --configuration Release --no-restore
       - name: Test
         run: dotnet test Chattle.Tests
