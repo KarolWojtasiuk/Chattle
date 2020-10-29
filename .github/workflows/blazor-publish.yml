@@ -1,0 +1,25 @@
+name: Blazor Publish
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.100-rc.2.20479.15
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet publish Chattle.WebClient --configuration Release --no-restore --output output
+    - name: Deploy 
+      uses: peaceiris/actions-gh-pages@v3 
+      with: 
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./output/wwwroot
