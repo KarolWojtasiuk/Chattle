@@ -13,7 +13,7 @@ jobs:
       - name: Setup
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.401
+          dotnet-version: 5.0.100
       - name: Restore
         run: dotnet restore Chattle
       - name: Build
@@ -22,5 +22,9 @@ jobs:
         run: dotnet restore Chattle.SignalR
       - name: Build SignalR
         run: dotnet build Chattle.SignalR --configuration Release --no-restore
+      - name: Restore WebClient
+        run: dotnet restore Chattle.WebClient
+      - name: Build WebClient
+        run: dotnet build Chattle.WebClient --configuration Release --no-restore
       - name: Test
         run: dotnet test Chattle.Tests

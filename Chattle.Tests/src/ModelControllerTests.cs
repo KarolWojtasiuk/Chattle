@@ -8,7 +8,7 @@ namespace Chattle.Tests
     public class ModelControllerTests
     {
         public const string ConnectionString = "mongodb+srv://testUser:testPassword@cluster-ktbsc.azure.mongodb.net";
-        public static IDatabase Database = new MongoDatabase(ConnectionString, "TestDatabase");
+        public readonly static IDatabase Database = new MongoDatabase(ConnectionString, "TestDatabase");
 
         [Fact]
         public void AccountTest()
