@@ -1,10 +1,10 @@
-# Chattle ![.NET Core](https://github.com/KarolWojtasiuk/Chattle/workflows/.NET%20Core/badge.svg?branch=master) 
+# Chattle ![.NET Core](https://github.com/KarolWojtasiuk/Chattle/workflows/.NET%20Core/badge.svg?branch=master) ![NuGet](https://img.shields.io/nuget/dt/Chattle?style=flat)
 
 Real-time chat server based on MongoDB and SignalR with support of permissions.
 
 ## Usage - Library
 ### Installing
-#### NuGet package
+#### NuGet package 
 > dotnet add package Chattle
 
 ### Example usage
