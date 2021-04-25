@@ -1,0 +1,18 @@
+name: .NET
+on: [ push, pull_request ]
+
+jobs:
+  job:
+    name: Build and Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    steps:
+      - uses: actions/checkout@master
+      - name: Restore
+        run: dotnet restore Chattle.Library
+      - name: Build
+        run: dotnet build Chattle.Library --configuration Release --no-restore
+      - name: Test
+        run: dotnet test Chattle.Tests

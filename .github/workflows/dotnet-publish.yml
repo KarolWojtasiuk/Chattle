@@ -1,0 +1,17 @@
+name: .NET Publish
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Publish NuGet package
+        uses: rohith/publish-nuget@v2
+        with:
+          PROJECT_FILE_PATH: Chattle.Library/Chattle.Library.csproj
+          PACKAGE_NAME: Chattle.Library
+          NUGET_KEY: ${{secrets.NUGET_KEY}}
