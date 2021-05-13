@@ -12,6 +12,6 @@ jobs:
       - name: Publish NuGet package
         uses: rohith/publish-nuget@v2
         with:
-          PROJECT_FILE_PATH: Chattle.Library/Chattle.Library.csproj
-          PACKAGE_NAME: Chattle.Library
+          PROJECT_FILE_PATH: Chattle/Chattle.csproj
+          PACKAGE_NAME: Chattle
           NUGET_KEY: ${{secrets.NUGET_KEY}}

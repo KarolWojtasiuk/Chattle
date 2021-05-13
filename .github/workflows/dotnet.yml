@@ -11,8 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Restore
-        run: dotnet restore Chattle.Library
+        run: dotnet restore Chattle
       - name: Build
-        run: dotnet build Chattle.Library --configuration Release --no-restore
+        run: dotnet build Chattle --configuration Release --no-restore
       - name: Test
         run: dotnet test Chattle.Tests

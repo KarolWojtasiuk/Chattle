@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chattle.Library", "Chattle.Library\Chattle.Library.csproj", "{75DBAA5A-35E1-44B8-B14C-C8EA77C939D3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chattle", "Chattle\Chattle.csproj", "{75DBAA5A-35E1-44B8-B14C-C8EA77C939D3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chattle.Tests", "Chattle.Tests\Chattle.Tests.csproj", "{5C8742CE-A833-4DCA-9249-5C850D73DA9B}"
 EndProject
