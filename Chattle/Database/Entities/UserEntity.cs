@@ -5,27 +5,14 @@ namespace Chattle.Database.Entities
 {
     public record UserEntity : IEntity
     {
-        public Guid Id { get; private init; }
-        public string Nickname { get; init; }
-        public string Status { get; init; }
-        public bool IsActive { get; init; }
-        public Uri? ImageUri { get; init; }
-        public Guid AccountId { get; private init; }
-        public UserType UserType { get; private init; }
-        public UserGlobalPermission GlobalPermission { get; init; }
-        public DateTime CreationDate { get; private init; }
-
-        public UserEntity(string nickname, Guid accountId, UserType userType = UserType.User, bool isActive = true)
-        {
-            Id = Guid.NewGuid();
-            Nickname = nickname;
-            Status = String.Empty;
-            IsActive = isActive;
-            ImageUri = default;
-            AccountId = accountId;
-            UserType = userType;
-            GlobalPermission = UserGlobalPermission.None;
-            CreationDate = DateTime.UtcNow;
-        }
+        public Guid Id { get; init; } = Guid.Empty;
+        public string Nickname { get; init; } = String.Empty;
+        public string Status { get; init; } = String.Empty;
+        public bool IsActive { get; init; } = false;
+        public Uri? ImageUri { get; init; } = null;
+        public Guid AccountId { get; init; } = Guid.Empty;
+        public UserType UserType { get; init; } = UserType.User;
+        public UserGlobalPermission GlobalPermission { get; init; } = UserGlobalPermission.None;
+        public DateTime CreationDate { get; init; } = DateTime.MinValue;
     }
 }
