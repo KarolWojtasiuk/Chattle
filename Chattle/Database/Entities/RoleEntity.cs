@@ -16,12 +16,5 @@ namespace Chattle.Database.Entities
         public Guid ServerId { get; init; } = Guid.Empty;
         public IReadOnlyList<Guid> Users { get; init; } = Array.Empty<Guid>();
         public DateTime CreationDate { get; init; } = DateTime.MinValue;
-
-        public void x()
-        {
-            var permission = 12;
-            
-
-        }
     }
 }
