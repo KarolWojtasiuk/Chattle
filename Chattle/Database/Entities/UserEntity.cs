@@ -3,7 +3,7 @@ using Chattle.Models;
 
 namespace Chattle.Database.Entities
 {
-    public record UserEntity
+    public record UserEntity : IEntity
     {
         public Guid Id { get; private init; }
         public string Nickname { get; init; }
@@ -14,5 +14,18 @@ namespace Chattle.Database.Entities
         public UserType UserType { get; private init; }
         public UserGlobalPermission GlobalPermission { get; init; }
         public DateTime CreationDate { get; private init; }
+
+        public UserEntity(string nickname, Guid accountId, UserType userType = UserType.User, bool isActive = true)
+        {
+            Id = Guid.NewGuid();
+            Nickname = nickname;
+            Status = String.Empty;
+            IsActive = isActive;
+            ImageUri = default;
+            AccountId = accountId;
+            UserType = userType;
+            GlobalPermission = UserGlobalPermission.None;
+            CreationDate = DateTime.UtcNow;
+        }
     }
 }

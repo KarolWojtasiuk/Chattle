@@ -2,7 +2,7 @@ using System;
 
 namespace Chattle.Database.Entities
 {
-    public record MessageEntity
+    public record MessageEntity : IEntity
     {
         public Guid Id { get; private init; }
         public string Content { get; init; }

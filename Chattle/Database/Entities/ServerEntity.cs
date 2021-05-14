@@ -2,7 +2,7 @@ using System;
 
 namespace Chattle.Database.Entities
 {
-    public record ServerEntity
+    public record ServerEntity : IEntity
     {
         public Guid Id { get; private init; }
         public string Name { get; init; }
@@ -11,11 +11,12 @@ namespace Chattle.Database.Entities
         public Guid OwnerId { get; init; }
         public DateTime CreationDate { get; private init; }
 
-        public ServerEntity(string name, string description, Guid ownerId)
+        public ServerEntity(string name, Guid ownerId, string description = "")
         {
             Id = Guid.NewGuid();
             Name = name;
             Description = description;
+            ImageUri = default;
             OwnerId = ownerId;
             CreationDate = DateTime.UtcNow;
         }

@@ -2,7 +2,7 @@ using System;
 
 namespace Chattle.Database.Entities
 {
-    public record ChannelEntity
+    public record ChannelEntity : IEntity
     {
         public Guid Id { get; private init; }
         public string Name { get; init; }
@@ -11,7 +11,7 @@ namespace Chattle.Database.Entities
         public Guid AuthorId { get; private init; }
         public DateTime CreationDate { get; private init; }
 
-        public ChannelEntity(string name, string description, Guid serverId, Guid authorId)
+        public ChannelEntity(string name, Guid serverId, Guid authorId, string description = "")
         {
             Id = Guid.NewGuid();
             Name = name;
