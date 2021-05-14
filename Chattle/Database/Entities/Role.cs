@@ -15,7 +15,7 @@ namespace Chattle.Database.Entities
         // public Color Color { get; init; }
         public Permission Permission { get; init; }
         public Guid ServerId { get; private init; }
-        private IReadOnlyList<Guid> Users { get; init; }
+        public IReadOnlyList<Guid> Users { get; init; }
         public DateTime CreationDate { get; private init; }
 
         public RoleEntity(string name /*, Color color */, Permission permission, Guid serverId, IEnumerable<Guid> users)
