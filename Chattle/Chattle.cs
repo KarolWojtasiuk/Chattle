@@ -1,26 +1,14 @@
-using Chattle.Database;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Chattle
 {
     public class Chattle
     {
-        public Chattle(IDatabaseContext databaseContext)
+        internal Chattle(ServiceProvider serviceProvider)
         {
-            _databaseContext = databaseContext;
-            InitializeServices();
+            ServiceProvider = serviceProvider;
         }
 
-        private readonly IDatabaseContext _databaseContext;
-
-        private void InitializeServices()
-        {
-            var services = new ServiceCollection();
-            services.AddSingleton(_databaseContext);
-            services.AddSingleton<DatabaseController>();
-            services.AddMediatR(typeof(Chattle));
-            services.BuildServiceProvider();
-        }
+        public ServiceProvider ServiceProvider { get; }
     }
 }
