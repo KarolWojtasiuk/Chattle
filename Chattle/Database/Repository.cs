@@ -5,9 +5,9 @@ using Chattle.Database.Entities;
 
 namespace Chattle.Database
 {
-    public abstract class Repository<T> : IRepository<T> where T : IEntity
+    public class Repository<T> : IRepository<T> where T : IEntity
     {
-        protected Repository(IDatabaseContext databaseContext, string collectionName)
+        public Repository(IDatabaseContext databaseContext, string collectionName)
         {
             _databaseContext = databaseContext;
             _collectionName = collectionName;
