@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Chattle.Database.Entities;
 
-namespace Chattle.Database
+namespace Chattle.Database.DatabaseProviders
 {
-    public interface IDatabaseContext
+    public interface IDatabaseProvider
     {
         public void Insert<T>(T item, string collectionName) where T : IEntity;
 

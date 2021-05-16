@@ -1,17 +1,18 @@
+using Chattle.Database.DatabaseProviders;
 using Chattle.Database.Entities;
 
 namespace Chattle.Database
 {
     public class DatabaseController
     {
-        public DatabaseController(IDatabaseContext databaseContext)
+        public DatabaseController(IDatabaseProvider databaseProvider)
         {
-            Accounts = new Repository<AccountEntity>(databaseContext, "Accounts");
-            Users = new Repository<UserEntity>(databaseContext, "Users");
-            Servers = new Repository<ServerEntity>(databaseContext, "Servers");
-            Channels = new Repository<ChannelEntity>(databaseContext, "Channels");
-            Messages = new Repository<MessageEntity>(databaseContext, "Messages");
-            Roles = new Repository<RoleEntity>(databaseContext, "Roles");
+            Accounts = new Repository<AccountEntity>(databaseProvider, "Accounts");
+            Users = new Repository<UserEntity>(databaseProvider, "Users");
+            Servers = new Repository<ServerEntity>(databaseProvider, "Servers");
+            Channels = new Repository<ChannelEntity>(databaseProvider, "Channels");
+            Messages = new Repository<MessageEntity>(databaseProvider, "Messages");
+            Roles = new Repository<RoleEntity>(databaseProvider, "Roles");
         }
 
         public Repository<AccountEntity> Accounts { get; }
