@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Chattle.Database.Entities;
+using Chattle.Exceptions;
 
 namespace Chattle.Database.DatabaseProviders
 {
@@ -33,7 +34,7 @@ namespace Chattle.Database.DatabaseProviders
                 var index = _database[collectionName].FindIndex(e => e.Id == item.Id);
                 if (index == -1)
                 {
-                    //TODO: Implement case where the original object does not exist when calling Replace();
+                    throw new DatabaseReplaceException<T>(item.Id, "Entity does not exist.");
                 }
 
                 _database[collectionName][index] = item;
@@ -41,7 +42,7 @@ namespace Chattle.Database.DatabaseProviders
             }
 
             _database.Add(collectionName, new List<IEntity>());
-            //TODO: Implement case where the original object does not exist when calling Replace();
+            throw new DatabaseReplaceException<T>(item.Id, "Entity does not exist.");
         }
 
         public void Delete<T>(Guid id, string collectionName) where T : IEntity
@@ -52,14 +53,14 @@ namespace Chattle.Database.DatabaseProviders
 
                 if (removedObjects == 0)
                 {
-                    //TODO: Implement case where the original object does not exist when calling Delete();
+                    throw new DatabaseDeleteException<T>(id, "Entity does not exist.");
                 }
 
                 return;
             }
 
             _database.Add(collectionName, new List<IEntity>());
-            //TODO: Implement case where the original object does not exist when calling Delete();
+            throw new DatabaseDeleteException<T>(id, "Entity does not exist.");
         }
 
         public T FindOne<T>(Expression<Func<T, bool>> expression, string collectionName) where T : IEntity
@@ -69,15 +70,14 @@ namespace Chattle.Database.DatabaseProviders
                 var entity = _database[collectionName].Cast<T>().FirstOrDefault(expression.Compile());
                 if (entity is null)
                 {
-                    //TODO: Implement case where the original object does not exist when calling FindOne();
+                    throw new DatabaseFindException<T>(expression, "Entity does not exist.");
                 }
 
                 return entity;
             }
 
             _database.Add(collectionName, new List<IEntity>());
-            return default;
-            //TODO: Implement case where the original object does not exist when calling FindOne();
+            throw new DatabaseFindException<T>(expression, "Entity does not exist.");
         }
 
         public IEnumerable<T> FindMany<T>(Expression<Func<T, bool>> expression, string collectionName) where T : IEntity
