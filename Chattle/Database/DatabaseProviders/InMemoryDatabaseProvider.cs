@@ -20,6 +20,11 @@ namespace Chattle.Database.DatabaseProviders
         {
             if (_database.ContainsKey(collectionName))
             {
+                if (_database[collectionName].FirstOrDefault(x => x.Id == item.Id) is not null)
+                {
+                    throw new DatabaseInsertException<T>(item.Id, "Entity already exists.");
+                }
+
                 _database[collectionName].Add(item);
                 return;
             }
