@@ -1,19 +1,28 @@
 using System.Linq;
 using Chattle.Database;
 using Chattle.Database.DatabaseProviders;
+using Serilog;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Chattle.Tests.Database
 {
     public class RepositoryTests
     {
-        private readonly Repository<TestEntity> _repository = new(new InMemoryDatabaseProvider(), "TestCollection");
+        private readonly Repository<TestEntity> _repository;
+
+        public RepositoryTests(ITestOutputHelper outputHelper)
+        {
+            var logger = new LoggerConfiguration().WriteTo.TestOutput(outputHelper).CreateLogger();
+            _repository = new Repository<TestEntity>(new InMemoryDatabaseProvider(), "TestCollection", logger);
+        }
 
         [Fact]
         public void InsertTest()
         {
             var testObject = new TestEntity();
 
+            _repository.Insert(testObject);
             _repository.Insert(testObject);
         }
 
