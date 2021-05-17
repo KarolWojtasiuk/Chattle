@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Chattle.Database.DatabaseProviders;
 using Chattle.Exceptions;
 using Xunit;
@@ -59,11 +60,14 @@ namespace Chattle.Tests.Database.DatabaseProviders
         [Fact]
         public void FindManyTest()
         {
-            var testObject = new TestEntity {Name = "TestObject"};
+            var testObject1 = new TestEntity {Name = "TestObject"};
+            var testObject2 = new TestEntity {Name = "TestObject"};
 
-            Assert.Empty(_database.FindMany<TestEntity>(e => e.Id == testObject.Id, "TestCollection1"));
-            _database.Insert(testObject, "TestCollection1");
-            Assert.Single(_database.FindMany<TestEntity>(e => e.Id == testObject.Id, "TestCollection1"));
+            Assert.Empty(_database.FindMany<TestEntity>(e => e.Name == "TestObject", "TestCollection1"));
+            _database.Insert(testObject1, "TestCollection1");
+            Assert.Single(_database.FindMany<TestEntity>(e => e.Name == "TestObject", "TestCollection1"));
+            _database.Insert(testObject2, "TestCollection1");
+            Assert.Equal(2, _database.FindMany<TestEntity>(e => e.Name == "TestObject", "TestCollection1").Count());
         }
     }
 }
