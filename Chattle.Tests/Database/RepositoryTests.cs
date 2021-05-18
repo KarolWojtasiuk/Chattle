@@ -9,13 +9,13 @@ namespace Chattle.Tests.Database
 {
     public class RepositoryTests
     {
-        private readonly Repository<TestEntity> _repository;
-
         public RepositoryTests(ITestOutputHelper outputHelper)
         {
             var logger = new LoggerConfiguration().WriteTo.TestOutput(outputHelper).CreateLogger();
             _repository = new Repository<TestEntity>(new InMemoryDatabaseProvider(), "TestCollection", logger);
         }
+
+        private readonly Repository<TestEntity> _repository;
 
         [Fact]
         public void InsertTest()

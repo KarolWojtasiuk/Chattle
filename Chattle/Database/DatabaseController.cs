@@ -6,7 +6,7 @@ namespace Chattle.Database
 {
     public class DatabaseController
     {
-        public DatabaseController(IDatabaseProvider databaseProvider, ILogger logger)
+        public DatabaseController(IDatabaseProvider databaseProvider, ILogger? logger = null)
         {
             Accounts = new Repository<AccountEntity>(databaseProvider, "Accounts", logger);
             Users = new Repository<UserEntity>(databaseProvider, "Users", logger);
