@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Chattle.Database;
 using Chattle.Database.DatabaseProviders;
@@ -49,11 +50,18 @@ namespace Chattle.Tests.Database
         [Fact]
         public void GetTest()
         {
-            var testObject = new TestEntity();
+            var testObject = new TestEntity {CreationDate = DateTime.UnixEpoch};
 
             Assert.Null(_repository.Get(testObject.Id));
             _repository.Insert(testObject);
-            Assert.Equal(testObject, _repository.Get(testObject.Id));
+
+            var testObjectFromDatabase = _repository.Get(testObject.Id)!;
+
+            Assert.NotNull(testObjectFromDatabase);
+            Assert.Equal(testObject, testObjectFromDatabase);
+            Assert.Equal(testObject.Id, testObjectFromDatabase.Id);
+            Assert.Equal(testObject.Name, testObjectFromDatabase.Name);
+            Assert.Equal(testObject.CreationDate, testObjectFromDatabase.CreationDate);
         }
 
         [Fact]
