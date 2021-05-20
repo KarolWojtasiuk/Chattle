@@ -15,7 +15,7 @@ namespace Chattle
         {
             if (_databaseProvider.GetType() == typeof(InMemoryDatabaseProvider))
             {
-                _logger.Warning("You are using {Type} as database provider, this provider should only be used for testing",
+                _logger.Warning("Using {Type} as database provider, this provider should only be used for testing",
                     typeof(InMemoryDatabaseProvider));
             }
 
