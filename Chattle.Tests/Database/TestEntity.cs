@@ -1,9 +1,9 @@
 using System;
-using Chattle.Database.Entities;
+using Chattle.Models;
 
 namespace Chattle.Tests.Database
 {
-    public record TestEntity : IEntity
+    public record TestEntity : IIdentifiable
     {
         public Guid Id { get; init; } = Guid.NewGuid();
         public string Name { get; init; } = String.Empty;

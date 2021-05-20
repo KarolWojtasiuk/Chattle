@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Chattle.Database.Entities;
 using Chattle.Exceptions;
+using Chattle.Models;
 
 namespace Chattle.Database.DatabaseProviders
 {
@@ -11,12 +11,12 @@ namespace Chattle.Database.DatabaseProviders
     {
         public InMemoryDatabaseProvider()
         {
-            _database = new Dictionary<string, List<IEntity>>();
+            _database = new Dictionary<string, List<IIdentifiable>>();
         }
 
-        private readonly Dictionary<string, List<IEntity>> _database;
+        private readonly Dictionary<string, List<IIdentifiable>> _database;
 
-        public void Insert<T>(T item, string collectionName) where T : IEntity
+        public void Insert<T>(T item, string collectionName) where T : IIdentifiable
         {
             if (_database.ContainsKey(collectionName))
             {
@@ -29,10 +29,10 @@ namespace Chattle.Database.DatabaseProviders
                 return;
             }
 
-            _database.Add(collectionName, new List<IEntity> {item});
+            _database.Add(collectionName, new List<IIdentifiable> {item});
         }
 
-        public void Replace<T>(T item, string collectionName) where T : IEntity
+        public void Replace<T>(T item, string collectionName) where T : IIdentifiable
         {
             if (_database.ContainsKey(collectionName))
             {
@@ -46,11 +46,11 @@ namespace Chattle.Database.DatabaseProviders
                 return;
             }
 
-            _database.Add(collectionName, new List<IEntity>());
+            _database.Add(collectionName, new List<IIdentifiable>());
             throw new DatabaseReplaceException<T>(item.Id, "Entity does not exist.");
         }
 
-        public void Delete<T>(Guid id, string collectionName) where T : IEntity
+        public void Delete<T>(Guid id, string collectionName) where T : IIdentifiable
         {
             if (_database.ContainsKey(collectionName))
             {
@@ -64,11 +64,11 @@ namespace Chattle.Database.DatabaseProviders
                 return;
             }
 
-            _database.Add(collectionName, new List<IEntity>());
+            _database.Add(collectionName, new List<IIdentifiable>());
             throw new DatabaseDeleteException<T>(id, "Entity does not exist.");
         }
 
-        public T FindOne<T>(Expression<Func<T, bool>> expression, string collectionName) where T : IEntity
+        public T FindOne<T>(Expression<Func<T, bool>> expression, string collectionName) where T : IIdentifiable
         {
             if (_database.ContainsKey(collectionName))
             {
@@ -81,11 +81,11 @@ namespace Chattle.Database.DatabaseProviders
                 return entity;
             }
 
-            _database.Add(collectionName, new List<IEntity>());
+            _database.Add(collectionName, new List<IIdentifiable>());
             throw new DatabaseFindException<T>(expression, "Entity does not exist.");
         }
 
-        public IEnumerable<T> FindMany<T>(Expression<Func<T, bool>> expression, string collectionName) where T : IEntity
+        public IEnumerable<T> FindMany<T>(Expression<Func<T, bool>> expression, string collectionName) where T : IIdentifiable
         {
             if (_database.ContainsKey(collectionName))
             {
@@ -94,7 +94,7 @@ namespace Chattle.Database.DatabaseProviders
                 return entities;
             }
 
-            _database.Add(collectionName, new List<IEntity>());
+            _database.Add(collectionName, new List<IIdentifiable>());
             return Array.Empty<T>();
         }
     }

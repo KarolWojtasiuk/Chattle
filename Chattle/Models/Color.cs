@@ -9,15 +9,15 @@ namespace Chattle.Models
             B = b;
         }
 
-        public byte R { get; init; }
-        public byte G { get; init; }
-        public byte B { get; init; }
+        public byte R { get; }
+        public byte G { get; }
+        public byte B { get; }
 
-        public static readonly Color Black = new Color(0, 0, 0);
-        public static readonly Color White = new Color(255, 255, 255);
-        public static readonly Color Red = new Color(255, 0, 0);
-        public static readonly Color Green = new Color(0, 255, 0);
-        public static readonly Color Blue = new Color(0, 0, 255);
+        public static readonly Color Black = new(0, 0, 0);
+        public static readonly Color White = new(255, 255, 255);
+        public static readonly Color Red = new(255, 0, 0);
+        public static readonly Color Green = new(0, 255, 0);
+        public static readonly Color Blue = new(0, 0, 255);
 
         public string ToHexString()
         {

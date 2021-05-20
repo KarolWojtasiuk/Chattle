@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Chattle.Database.Entities;
 using Chattle.Models;
 using Xunit;
 
@@ -11,7 +10,7 @@ namespace Chattle.Tests.Database
         [Fact]
         public void AccountTest()
         {
-            var account = new AccountEntity
+            var account = new Account
             {
                 Id = Guid.NewGuid(),
                 Name = "Account",
@@ -35,7 +34,7 @@ namespace Chattle.Tests.Database
         [Fact]
         public void UserTest()
         {
-            var user = new UserEntity
+            var user = new User
             {
                 Id = Guid.NewGuid(),
                 Nickname = "User",
@@ -63,7 +62,7 @@ namespace Chattle.Tests.Database
         [Fact]
         public void ServerTest()
         {
-            var server = new ServerEntity
+            var server = new Server
             {
                 Id = Guid.NewGuid(),
                 Name = "Server",
@@ -85,7 +84,7 @@ namespace Chattle.Tests.Database
         [Fact]
         public void ChannelTest()
         {
-            var channel = new ChannelEntity
+            var channel = new Channel
             {
                 Id = Guid.NewGuid(),
                 Name = "Server",
@@ -107,7 +106,7 @@ namespace Chattle.Tests.Database
         [Fact]
         public void MessageTest()
         {
-            var message = new MessageEntity
+            var message = new Message
             {
                 Id = Guid.NewGuid(),
                 Content = "Server",
@@ -127,7 +126,7 @@ namespace Chattle.Tests.Database
         [Fact]
         public void RoleTest()
         {
-            var role = new RoleEntity
+            var role = new Role
             {
                 Id = Guid.NewGuid(),
                 Name = "Server",

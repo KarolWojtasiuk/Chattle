@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Chattle.Database.DatabaseProviders;
-using Chattle.Database.Entities;
 using Chattle.Exceptions;
+using Chattle.Models;
 using Serilog;
 
 namespace Chattle.Database
 {
-    public class Repository<T> : IRepository<T> where T : IEntity
+    public class Repository<T> : IRepository<T> where T : IIdentifiable
     {
         public Repository(IDatabaseProvider databaseProvider, string collectionName, ILogger? logger = null)
         {
