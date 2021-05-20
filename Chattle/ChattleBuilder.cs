@@ -40,6 +40,7 @@ namespace Chattle
             services.AddSingleton(_logger);
             services.AddSingleton(_databaseProvider);
             services.AddSingleton<DatabaseController>();
+            services.AddSingleton<PermissionChecker>();
             services.AddMediatR(typeof(Chattle));
             return services.BuildServiceProvider();
         }
