@@ -48,6 +48,9 @@ namespace Chattle
         private static ILogger GetDefaultLogger()
         {
             var logger = new LoggerConfiguration()
+#if DEBUG
+                .MinimumLevel.Verbose()
+#endif
                 .WriteTo.Console()
                 .CreateLogger();
 
