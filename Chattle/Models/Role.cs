@@ -10,7 +10,7 @@ namespace Chattle.Models
         public Color Color { get; init; } = Color.Black;
         public Permission Permission { get; init; } = Permission.None;
         public Guid ServerId { get; init; } = Guid.Empty;
-        public IList<Guid> Users { get; init; } = Array.Empty<Guid>();
+        public IEnumerable<Guid> Users { get; init; } = Array.Empty<Guid>();
         public DateTime CreationDate { get; init; } = DateTime.UtcNow;
     }
 }

@@ -1,22 +1,19 @@
-using System;
-using Chattle.Database;
+using Chattle.Models;
 
 namespace Chattle
 {
     public class PermissionChecker
     {
-        public PermissionChecker(DatabaseController databaseController)
+        public bool CanGetAccount(Account requesterAccount)
         {
-            _databaseController = databaseController;
+            // Account can get accounts if it is active;
+            return requesterAccount.IsActive;
         }
 
-        private readonly DatabaseController _databaseController;
-
-        public bool CanGetAccount(Guid requesterAccountId)
+        public bool CanGetUser(Account requesterAccount)
         {
-            var requester = _databaseController.Accounts.Get(requesterAccountId);
-
-            return requester?.IsActive ?? false;
+            // Account can get users if it is active;
+            return requesterAccount.IsActive;
         }
     }
 }

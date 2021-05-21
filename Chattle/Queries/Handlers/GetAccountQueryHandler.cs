@@ -8,9 +8,9 @@ using MediatR;
 
 namespace Chattle.Queries.Handlers
 {
-    public class GetAccountHandler : IRequestHandler<GetAccountQuery, AccountDto>
+    public class GetAccountQueryHandler : IRequestHandler<GetAccountQuery, AccountDto>
     {
-        public GetAccountHandler(DatabaseController databaseController, PermissionChecker permissionChecker, DtoMapper mapper)
+        public GetAccountQueryHandler(DatabaseController databaseController, PermissionChecker permissionChecker, DtoMapper mapper)
         {
             _databaseController = databaseController;
             _permissionChecker = permissionChecker;
@@ -23,15 +23,21 @@ namespace Chattle.Queries.Handlers
 
         public Task<AccountDto> Handle(GetAccountQuery request, CancellationToken cancellationToken)
         {
-            if (!_permissionChecker.CanGetAccount(request.RequesterAccountId))
+            var requesterAccount = _databaseController.Accounts.Get(request.RequesterAccountId);
+            if (requesterAccount is null)
             {
-                throw new InsufficientPermissionException<Account>(request.RequesterAccountId);
+                throw new ObjectNotFoundException<Account>(request.RequesterAccountId);
+            }
+
+            if (!_permissionChecker.CanGetAccount(requesterAccount))
+            {
+                throw new InsufficientPermissionException<Account>(requesterAccount.Id);
             }
 
             var account = _databaseController.Accounts.Get(request.AccountId);
             if (account is null)
             {
-                throw new ObjectNotFoundException<Account>(request.RequesterAccountId);
+                throw new ObjectNotFoundException<Account>(request.AccountId);
             }
 
             return Task.FromResult(_mapper.DomainToDto<Account, AccountDto>(account));
