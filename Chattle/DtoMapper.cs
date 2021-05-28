@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Chattle.Models;
 using Chattle.ModelsDto;
 using MapsterMapper;
@@ -21,6 +23,20 @@ namespace Chattle
         public TDto DomainToDto<TDomain, TDto>(TDomain domainObject) where TDto : IDtoObject where TDomain : IIdentifiable
         {
             return _mapper.Map<TDto>(domainObject);
+        }
+
+        public ServerDto DomainToDto(Server domainObject, IEnumerable<Role> roles)
+        {
+            return new ServerDto
+            {
+                Id = domainObject.Id,
+                Name = domainObject.Name,
+                Description = domainObject.Description,
+                ImageUri = domainObject.ImageUri,
+                OwnerId = domainObject.OwnerId,
+                Roles = roles.Select(DomainToDto<Role, RoleDto>).ToList(),
+                CreationDate = domainObject.CreationDate
+            };
         }
     }
 }
